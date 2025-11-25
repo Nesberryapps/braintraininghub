@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1080250387073",
+    "firebase_url": "https://mind-bloom-v3y6p-default-rtdb.firebaseio.com",
+    "project_id": "mind-bloom-v3y6p",
+    "storage_bucket": "mind-bloom-v3y6p.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080250387073:android:385af8db476eb006fedb80",
+        "android_client_info": {
+          "package_name": "com.braintraininghub.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1080250387073-s93gq63qm50f55h90u4k38f5g4j855s2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRYYcd8jNO1PLscSSMlnkp-QiO-A9OGO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1080250387073-s93gq63qm50f55h90u4k38f5g4j855s2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,67 @@
+
+import type { Metadata } from "next";
+import { PT_Sans } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
+import { Footer } from "@/components/layout/footer";
+import { AppHeader } from "@/components/layout/header";
+import { GoogleScripts } from "@/components/ads/google-scripts";
+import Script from "next/script";
+
+const ptSans = PT_Sans({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-sans",
+});
+
+export const metadata: Metadata = {
+  title: "Brain Training Hub",
+  description: "A clean, modern brain exercise app.",
+  icons: null,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="google-adsense-account" content="ca-pub-6191158195654090" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+        <GoogleScripts />
+        {/* Google tag (gtag.js) */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-17507715969"></Script>
+        <Script id="google-ads-config">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17507715969');
+          `}
+        </Script>
+      </head>
+      <body className={cn("font-body antialiased", ptSans.variable)}>
+          <div className="flex flex-col min-h-screen">
+            <AppHeader />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </div>
+          <Toaster />
+      </body>
+    </html>
+  );
+}
