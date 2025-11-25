@@ -39,9 +39,9 @@ jobs:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
 
       - name: Sign Android App
+        working-directory: ./android
         run: |
-          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > android/app/keystore.jks
-          cd android
+          echo "${{ secrets.ANDROID_SIGNING_KEY }}" | base64 --decode > app/keystore.jks
           chmod +x gradlew
           ./gradlew bundleRelease
         env:
