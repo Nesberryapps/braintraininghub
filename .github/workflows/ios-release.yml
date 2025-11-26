@@ -1,1 +1,43 @@
-# This workflow is disabled.
+# This workflow builds and signs the iOS app and prepares it for App Store Connect
+name: Deploy iOS to App Store
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and Sync
+        run: npm run mobile:build:ios
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+
+      # We will add signing and deployment steps here later
+      - name: Build Xcode Project
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release archive -archivePath $PWD/App.xcarchive
+          xcodebuild -exportArchive -archivePath $PWD/App.xcarchive -exportPath $PWD/build -exportOptionsPlist ../../exportOptions.plist
+
+      - name: Upload Artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Brain-Training-Hub.ipa
+          path: ios/App/build/App.ipa
