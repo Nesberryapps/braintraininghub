@@ -72,7 +72,7 @@ jobs:
             -configuration Release \
             -archivePath $PWD/build/App.xcarchive \
             clean archive \
-            PROVISIONING_PROFILE_SPECIFIER="" \
+            PROVISIONING_PROFILE_SPECIFIER="Brain Training Hub Store" \
             CODE_SIGN_STYLE="Manual" \
             CODE_SIGN_IDENTITY="Apple Distribution"
 
