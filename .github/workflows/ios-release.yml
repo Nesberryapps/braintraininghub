@@ -52,3 +52,12 @@ jobs:
         with:
           name: Brain-Training-Hub.ipa
           path: ios/App/build/App.ipa
+          
+      - name: Deploy to App Store Connect
+        uses: apple-actions/upload-testflight-build@v2
+        with:
+          app-path: ios/App/build/App.ipa
+          issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_PRIVATE_KEY }}
+
