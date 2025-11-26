@@ -1,16 +1,6 @@
-require_relative '../../../node_modules/@capacitor/ios/scripts/pods_helper'
+require_relative '../../node_modules/@capacitor/ios/scripts/pods_helper'
 
 platform :ios, '13.0'
-use_frameworks!
-
-# workaround to avoid issues with Xcode 12.5
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-    end
-  end
-end
 
 target 'App' do
   capacitor_pods
