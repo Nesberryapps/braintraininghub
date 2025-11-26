@@ -60,4 +60,3 @@ jobs:
           issuer-id: ${{ secrets.APP_STORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APP_STORE_KEY_ID }}
           api-private-key: ${{ secrets.APP_STORE_PRIVATE_KEY }}
-
