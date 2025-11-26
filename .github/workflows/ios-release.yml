@@ -29,7 +29,18 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
 
-      # We will add signing and deployment steps here later
+      - name: Create & Install iOS Secrets
+        run: |
+          gem install fastlane
+          fastlane match appstore --app_identifier "com.braintraininghub.app"
+        env:
+          FASTLANE_USER: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
+          FASTLANE_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.IOS_KEY_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          FASTLANE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
       - name: Build Xcode Project
         run: |
           cd ios/App
