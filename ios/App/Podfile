@@ -3,16 +3,27 @@
 platform :ios, '13.0'
 use_frameworks!
 
-# Fixes an issue where XCode would not perform a full build, resulting in a stale app
-install! 'cocoapods',
-  :disable_input_output_paths => true
-
-def capacitor_pods
-  pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
-  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-  # Add your Pods here
-end
+# Fix found here: https://github.com/CocoaPods/CocoaPods/issues/11835#issuecomment-1493294331
+install! 'cocoapods', :disable_input_output_paths => true
 
 target 'App' do
   capacitor_pods
+  # Add your Pods here
 end
+
+post_install do |installer|
+  # Fix for https://github.com/facebook/react-native/issues/31348
+  installer.pods_project.targets.each do |target|
+    if target.name == 'React-hermes'
+      target.build_configurations.each do |config|
+        # Previous value:
+        #   "\"$(PODS_ROOT)/hermes-engine/destroot/bin/hermesc\"
+        # Reset to default value:
+        #   "\"$(PODS_ROOT)/hermes-engine/macos-bin/hermesc\"
+        config.build_settings['HERMES_CLI_PATH'] = '"$(PODS_ROOT)/hermes-engine/macos-bin/hermesc"'
+      end
+    end
+  end
+end
+
+project 'App.xcodeproj'
