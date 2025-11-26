@@ -1,32 +1,16 @@
-
-# DO NOT MODIFY.
-#
-# This file is created automatically by the Firebase tool.
-#
-# It contains the Pods that will be installed in your Xcode project.
-#
-require_relative '../../node_modules/@capacitor/ios/scripts/pods_helper'
+# DO NOT MODIFY. MANAGED BY CAPACITOR.
 
 platform :ios, '13.0'
 use_frameworks!
 
+# Fixes an issue where XCode would not perform a full build, resulting in a stale app
+install! 'cocoapods',
+  :disable_input_output_paths => true
+
 def capacitor_pods
-  # Automatic Pods installer
-  #
-  # This function will look for all plugins in your `package.json` and install
-  # any iOS pods that it finds.
-  #
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
-  
-  # Do not add pods here.
-  #
-  # If you need to add a new pod, you should do so by creating a new plugin
-  # and adding the pod to the `.podspec` file.
-  #
-  # For more information, see https://capacitorjs.com/docs/plugins/ios
-  #
-  install_pods_from_package_json
+  # Add your Pods here
 end
 
 target 'App' do
