@@ -1,8 +1,19 @@
-# platform :ios, '13.0'
-
 require_relative '../../node_modules/@capacitor/ios/scripts/pods_helper'
+
+platform :ios, '13.0'
+use_frameworks!
+
+# workaround to avoid issues with Xcode 12.5
+install! 'cocoapods', :disable_input_output_paths => true
+
+def capacitor_pods
+  # Automatic Pods
+  # E.g. pod 'CapacitorCommunityBarcodeScanner', :path => '../../node_modules/@capacitor-community/barcode-scanner'
+end
 
 target 'App' do
   capacitor_pods
-  # Add your Pods here
+  pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+  
 end
