@@ -61,12 +61,18 @@ jobs:
       - name: Configure Project Signing
         run: |
           cd ios/App
-          # 1. Disable Automatic Signing
+          # Disable Automatic Signing for BOTH the Project and the Targets
           sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' App.xcodeproj/project.pbxproj
-          # 2. Set the Profile Name (Must match the name on Apple Developer Portal)
+          
+          # Force the Profile Name everywhere
           sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = "";/PROVISIONING_PROFILE_SPECIFIER = "Brain Training Hub Store";/g' App.xcodeproj/project.pbxproj
-          # 3. Set the Team ID (Using the ID from your screenshot: 5BYJT9QTKZ)
+          
+          # Force the Team ID everywhere
           sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = 5BYJT9QTKZ;/g' App.xcodeproj/project.pbxproj
+          
+          # CRITICAL: Sometimes Team ID is missing entirely, so we inject it
+          # This finds the "SystemCapabilities" section and ensures Team ID is set before it
+          sed -i '' 's/SystemCapabilities = {/DevelopmentTeam = 5BYJT9QTKZ; SystemCapabilities = {/g' App.xcodeproj/project.pbxproj
 
       - name: Build iOS App
         run: |
