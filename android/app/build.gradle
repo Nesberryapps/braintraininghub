@@ -8,8 +8,8 @@ android {
         applicationId "com.braintraininghub.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName "7.0"
+        versionCode 17
+        versionName "8.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         aaptOptions {
