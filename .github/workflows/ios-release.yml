@@ -52,19 +52,15 @@ jobs:
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           echo -n "$PROFILE_BASE64" | base64 --decode -o $PP_PATH
           
-          # Extract the UUID to name the file correctly
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
           
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
-      # --- NEW: SURGICAL RUBY SCRIPT FIX ---
       - name: Configure Project Signing (Ruby)
         run: |
-          # Install the Xcode editing tool
           sudo gem install xcodeproj
           
-          # Run Ruby script to update settings precisely
           ruby -e "
           require 'xcodeproj'
           project_path = 'ios/App/App.xcodeproj'
@@ -77,10 +73,13 @@ jobs:
             target.build_configurations.each do |config|
               # 1. Force Manual Signing
               config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
-              # 2. Set the Profile Name (Must match Apple Portal exactly)
+              # 2. Set the Profile Name
               config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'Brain Training Hub Store'
               # 3. Set the Team ID
               config.build_settings['DEVELOPMENT_TEAM'] = '5BYJT9QTKZ'
+              # 4. FORCE DISTRIBUTION CERTIFICATE (Fixes the 'Development' error)
+              config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
+              config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = 'Apple Distribution'
             end
             project.save
             puts '✅ Signing settings updated successfully for App target!'
@@ -93,7 +92,6 @@ jobs:
       - name: Build iOS App
         run: |
           cd ios/App
-          # Note: No signing flags here because the Ruby script handled it
           xcodebuild -workspace App.xcworkspace \
             -scheme App \
             -sdk iphoneos \
