@@ -92,6 +92,7 @@ jobs:
       - name: Build iOS App
         run: |
           cd ios/App
+          # Note: No signing flags here because the Ruby script handled it
           xcodebuild -workspace App.xcworkspace \
             -scheme App \
             -sdk iphoneos \
@@ -99,6 +100,7 @@ jobs:
             -archivePath $PWD/build/App.xcarchive \
             clean archive
 
+      # --- YOU WERE MISSING THIS STEP ---
       - name: Export IPA
         run: |
           cd ios/App
@@ -107,13 +109,15 @@ jobs:
             -exportOptionsPlist App/export_options.plist \
             -exportPath $PWD/build \
             -allowProvisioningUpdates
-            
+      # ----------------------------------
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Brain-Training-Hub.ipa
           path: ios/App/build/App.ipa
-          - name: Upload to TestFlight
+
+      - name: Upload to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
           app-path: 'ios/App/build/App.ipa'
