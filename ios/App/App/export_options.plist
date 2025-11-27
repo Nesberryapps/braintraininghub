@@ -5,6 +5,13 @@
     <key>method</key>
     <string>app-store</string>
     <key>teamID</key>
-    <string>${{ secrets.APPLE_TEAM_ID }}</string>
+    <string>5BYJT9QTKZ</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.braintraininghub.app</key>
+        <string>Brain Training Hub Store</string>
+    </dict>
 </dict>
 </plist>
