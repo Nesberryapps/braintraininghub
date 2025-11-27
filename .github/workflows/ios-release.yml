@@ -52,31 +52,48 @@ jobs:
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           echo -n "$PROFILE_BASE64" | base64 --decode -o $PP_PATH
           
-          # Extract the UUID from the profile to name it correctly
+          # Extract the UUID to name the file correctly
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
           
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
-      - name: Configure Project Signing
+      # --- NEW: SURGICAL RUBY SCRIPT FIX ---
+      - name: Configure Project Signing (Ruby)
         run: |
-          cd ios/App
-          # Disable Automatic Signing for BOTH the Project and the Targets
-          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' App.xcodeproj/project.pbxproj
+          # Install the Xcode editing tool
+          sudo gem install xcodeproj
           
-          # Force the Profile Name everywhere
-          sed -i '' 's/PROVISIONING_PROFILE_SPECIFIER = "";/PROVISIONING_PROFILE_SPECIFIER = "Brain Training Hub Store";/g' App.xcodeproj/project.pbxproj
+          # Run Ruby script to update settings precisely
+          ruby -e "
+          require 'xcodeproj'
+          project_path = 'ios/App/App.xcodeproj'
+          project = Xcodeproj::Project.open(project_path)
           
-          # Force the Team ID everywhere
-          sed -i '' 's/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = 5BYJT9QTKZ;/g' App.xcodeproj/project.pbxproj
+          # Find the main 'App' target
+          target = project.targets.find { |t| t.name == 'App' }
           
-          # CRITICAL: Sometimes Team ID is missing entirely, so we inject it
-          # This finds the "SystemCapabilities" section and ensures Team ID is set before it
-          sed -i '' 's/SystemCapabilities = {/DevelopmentTeam = 5BYJT9QTKZ; SystemCapabilities = {/g' App.xcodeproj/project.pbxproj
+          if target
+            target.build_configurations.each do |config|
+              # 1. Force Manual Signing
+              config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+              # 2. Set the Profile Name (Must match Apple Portal exactly)
+              config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'Brain Training Hub Store'
+              # 3. Set the Team ID
+              config.build_settings['DEVELOPMENT_TEAM'] = '5BYJT9QTKZ'
+            end
+            project.save
+            puts '✅ Signing settings updated successfully for App target!'
+          else
+            puts '❌ Error: Could not find App target'
+            exit 1
+          end
+          "
 
       - name: Build iOS App
         run: |
           cd ios/App
+          # Note: No signing flags here because the Ruby script handled it
           xcodebuild -workspace App.xcworkspace \
             -scheme App \
             -sdk iphoneos \
