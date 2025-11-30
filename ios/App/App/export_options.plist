@@ -11,7 +11,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>com.nesberry.braintraining</key>
-        <string>BrainTrainingHub Pro Store</string>
+        <string>Brain Training Hub Pro Store</string>
     </dict>
 </dict>
 </plist>
