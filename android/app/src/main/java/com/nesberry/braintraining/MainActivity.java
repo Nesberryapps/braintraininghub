@@ -1,4 +1,4 @@
-package com.braintraininghub.app;
+package com.nesberry.braintraining;
 
 import com.getcapacitor.BridgeActivity;
 
