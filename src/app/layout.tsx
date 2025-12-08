@@ -18,7 +18,10 @@ const ptSans = PT_Sans({
 export const metadata: Metadata = {
   title: "Brain Training Hub",
   description: "A clean, modern brain exercise app.",
-  icons: null,
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
 };
 
 export default function RootLayout({
