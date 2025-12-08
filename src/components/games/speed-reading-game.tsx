@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { showRewardAd } from "@/services/admob";
+import { showRewardAd } from "@/services/admob.tsx";
 import { Video } from "lucide-react";
 
 type Question = {

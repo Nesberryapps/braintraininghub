@@ -10,7 +10,7 @@ import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
-import { initializeAdMob } from "@/services/admob";
+import { initializeAdMob } from "@/services/admob.tsx";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],

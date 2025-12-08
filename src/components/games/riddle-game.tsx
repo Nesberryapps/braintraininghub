@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
 import { Lightbulb, Video } from "lucide-react";
-import { showRewardAd } from "@/services/admob";
+import { showRewardAd } from "@/services/admob.tsx";
 
 type Riddle = {
   text: string;

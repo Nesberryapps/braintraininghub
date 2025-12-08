@@ -21,7 +21,7 @@ import { useAudio } from "@/hooks/use-audio";
 import { ArrowRight, Lightbulb, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { words3, words4, words5 } from "@/lib/word-lists";
-import { showRewardAd } from "@/services/admob";
+import { showRewardAd } from "@/services/admob.tsx";
 
 type Puzzle = {
   start: string;

@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useAudio } from "@/hooks/use-audio";
-import { showRewardAd } from "@/services/admob";
+import { showRewardAd } from "@/services/admob.tsx";
 import { useToast } from "@/hooks/use-toast";
 
 type CardData = {
