@@ -18,37 +18,40 @@ import {
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
+import { Lightbulb, Video } from "lucide-react";
+import { showRewardAd } from "@/services/admob";
 
 type Puzzle = {
   sequence: number[];
   answer: number;
+  hint: string;
 };
 
 const puzzles: Puzzle[] = [
-  { sequence: [2, 4, 6, 8], answer: 10 },
-  { sequence: [5, 10, 15, 20], answer: 25 },
-  { sequence: [1, 1, 2, 3, 5], answer: 8 },
-  { sequence: [10, 20, 30, 40], answer: 50 },
-  { sequence: [9, 8, 7, 6], answer: 5 },
-  { sequence: [1, 4, 9, 16], answer: 25 }, // Squares
-  { sequence: [2, 3, 5, 7], answer: 11 }, // Prime Numbers
-  { sequence: [8, 27, 64, 125], answer: 216 }, // Cubes
-  { sequence: [3, 6, 12, 24], answer: 48 }, // Geometric Progression (x2)
-  { sequence: [4, 5, 7, 10], answer: 14 }, // Difference increases by 1
-  { sequence: [50, 45, 40, 35], answer: 30 }, // Arithmetic Progression (-5)
-  { sequence: [1, 2, 6, 24], answer: 120 }, // Factorials
-  { sequence: [17, 16, 14, 11], answer: 7 }, // Decreasing difference
-  { sequence: [2, 6, 18, 54], answer: 162 }, // Geometric Progression (x3)
-  { sequence: [99, 92, 86, 81], answer: 77 }, // Difference decreases by 1
-  { sequence: [1, 3, 6, 10], answer: 15 }, // Triangular numbers
-  { sequence: [4, 9, 13, 22], answer: 35 }, // Sum of previous two
-  { sequence: [80, 40, 20, 10], answer: 5 }, // Halving
-  { sequence: [5, 7, 10, 14], answer: 19 }, // Add 2, 3, 4, ...
-  { sequence: [120, 99, 80, 63], answer: 48 }, // n^2 - 1
-  { sequence: [3, 4, 7, 11], answer: 18 }, // Fibonacci-like
-  { sequence: [2, 5, 11, 23], answer: 47 }, // (x * 2) + 1
-  { sequence: [61, 52, 43, 34], answer: 25 }, // Subtracting 9
-  { sequence: [1, 5, 13, 29], answer: 61 }, // (x * 2) + 3
+  { sequence: [2, 4, 6, 8], answer: 10, hint: "Each number increases by 2." },
+  { sequence: [5, 10, 15, 20], answer: 25, hint: "This is counting by fives." },
+  { sequence: [1, 1, 2, 3, 5], answer: 8, hint: "This is the Fibonacci sequence, where the next number is the sum of the previous two." },
+  { sequence: [10, 20, 30, 40], answer: 50, hint: "Each number increases by 10." },
+  { sequence: [9, 8, 7, 6], answer: 5, hint: "This sequence is counting down by one." },
+  { sequence: [1, 4, 9, 16], answer: 25, hint: "These are square numbers (1x1, 2x2, 3x3...)." },
+  { sequence: [2, 3, 5, 7], answer: 11, hint: "These are sequential prime numbers." },
+  { sequence: [8, 27, 64, 125], answer: 216, hint: "These are cube numbers (2x2x2, 3x3x3...)." },
+  { sequence: [3, 6, 12, 24], answer: 48, hint: "Each number is double the previous one." },
+  { sequence: [4, 5, 7, 10], answer: 14, hint: "The difference between numbers increases by one each time (+1, +2, +3...)." },
+  { sequence: [50, 45, 40, 35], answer: 30, hint: "The sequence is decreasing by 5 each time." },
+  { sequence: [1, 2, 6, 24], answer: 120, hint: "These are factorials (1!, 2!, 3!, 4!...)." },
+  { sequence: [17, 16, 14, 11], answer: 7, hint: "The amount you subtract increases by one each time (-1, -2, -3...)." },
+  { sequence: [2, 6, 18, 54], answer: 162, hint: "Each number is multiplied by 3." },
+  { sequence: [99, 92, 86, 81], answer: 77, hint: "The difference decreases by one each time (-7, -6, -5...)." },
+  { sequence: [1, 3, 6, 10], answer: 15, hint: "These are triangular numbers (sum of consecutive integers)." },
+  { sequence: [4, 9, 13, 22], answer: 35, hint: "Each number is the sum of the two preceding it." },
+  { sequence: [80, 40, 20, 10], answer: 5, hint: "Each number is half of the previous one." },
+  { sequence: [5, 7, 10, 14], answer: 19, hint: "The amount added increases each time (+2, +3, +4...)." },
+  { sequence: [120, 99, 80, 63], answer: 48, hint: "The pattern is n*n - 1, starting with n=11." },
+  { sequence: [3, 4, 7, 11], answer: 18, hint: "This is a Fibonacci-like sequence where you add the previous two numbers." },
+  { sequence: [2, 5, 11, 23], answer: 47, hint: "The pattern is to multiply by 2 and then add 1." },
+  { sequence: [61, 52, 43, 34], answer: 25, hint: "This sequence is subtracting 9 each time." },
+  { sequence: [1, 5, 13, 29], answer: 61, hint: "The pattern is to multiply by 2 and then add 3." },
 ];
 
 const getShuffledPuzzles = () => [...puzzles].sort(() => Math.random() - 0.5);
@@ -63,6 +66,7 @@ export function LogicPuzzleGame() {
   const router = useRouter();
   const { toast } = useToast();
   const playSound = useAudio();
+  const [hintUsed, setHintUsed] = useState(false);
 
   useEffect(() => {
     setPuzzleSet(getShuffledPuzzles());
@@ -78,6 +82,7 @@ export function LogicPuzzleGame() {
     setCurrentPuzzleIndex(0);
     setInputValue("");
     setIsGameComplete(false);
+    setHintUsed(false);
   }, []);
 
   const handleNextPuzzle = () => {
@@ -88,6 +93,7 @@ export function LogicPuzzleGame() {
       incrementProgress("logic");
     }
     setInputValue("");
+    setHintUsed(false);
   }
 
   const handleCheckAnswer = (e: FormEvent) => {
@@ -116,6 +122,17 @@ export function LogicPuzzleGame() {
         variant: "destructive",
       });
     }
+  };
+
+  const handleShowHint = () => {
+    if (!currentPuzzle || hintUsed) return;
+    showRewardAd(() => {
+      setHintUsed(true);
+      toast({
+        title: "Hint Unlocked!",
+        description: currentPuzzle.hint,
+      });
+    });
   };
 
   if (!currentPuzzle) {
@@ -156,9 +173,14 @@ export function LogicPuzzleGame() {
             />
             <Button type="submit">Check</Button>
           </form>
-           <Button variant="outline" onClick={resetGame} className="mt-2">
-            Reset Puzzles
-          </Button>
+           <div className="flex gap-2">
+            <Button variant="outline" onClick={resetGame} className="mt-2">
+              New Game
+            </Button>
+            <Button variant="outline" onClick={handleShowHint} disabled={hintUsed} className="mt-2">
+              <Video className="mr-2 h-4 w-4" /> Watch Ad for Hint
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

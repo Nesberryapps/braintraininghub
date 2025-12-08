@@ -18,7 +18,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Video } from "lucide-react";
+import { showRewardAd } from "@/services/admob";
 
 type Riddle = {
   text: string;
@@ -55,7 +56,7 @@ export function RiddleGame() {
   const [inputValue, setInputValue] = useState("");
   const [isGameComplete, setIsGameComplete] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(true);
-  const [hint, setHint] = useState<string | null>(null);
+  const [hintUsed, setHintUsed] = useState(false);
   const { incrementProgress } = useProgress();
   const router = useRouter();
   const { toast } = useToast();
@@ -75,7 +76,7 @@ export function RiddleGame() {
     setCurrentRiddleIndex(0);
     setInputValue("");
     setIsGameComplete(false);
-    setHint(null);
+    setHintUsed(false);
   }, []);
 
   const handleNextRiddle = () => {
@@ -86,7 +87,7 @@ export function RiddleGame() {
       incrementProgress("riddle");
     }
     setInputValue("");
-    setHint(null);
+    setHintUsed(false);
   }
 
   const handleCheckAnswer = (e: FormEvent) => {
@@ -122,13 +123,14 @@ export function RiddleGame() {
   };
 
   const showHint = () => {
-    if (currentRiddle) {
-        setHint(currentRiddle.hint);
+    if (!currentRiddle || hintUsed) return;
+    showRewardAd(() => {
+        setHintUsed(true);
         toast({
-            title: `Hint Unlocked!`,
+            title: "Hint Unlocked!",
             description: currentRiddle.hint,
         });
-    }
+    });
   };
 
   if (!currentRiddle) {
@@ -169,8 +171,8 @@ export function RiddleGame() {
            <Button variant="outline" onClick={resetGame} className="mt-2">
             New Game
           </Button>
-           <Button variant="outline" onClick={showHint} className="mt-2" disabled={!!hint}>
-            <Lightbulb className="mr-2 h-4 w-4" /> Hint
+           <Button variant="outline" onClick={showHint} className="mt-2" disabled={hintUsed}>
+            <Video className="mr-2 h-4 w-4" /> Watch Ad for Hint
           </Button>
           </div>
         </CardContent>

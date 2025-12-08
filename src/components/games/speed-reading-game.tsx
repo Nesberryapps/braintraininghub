@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import { showRewardAd } from "@/services/admob";
+import { Video } from "lucide-react";
 
 type Question = {
   question: string;
@@ -110,6 +112,7 @@ export function SpeedReadingGame() {
     const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
     const [score, setScore] = useState(0);
     const [isTutorialOpen, setIsTutorialOpen] = useState(true);
+    const [bonusUsed, setBonusUsed] = useState(false);
     
     const { incrementProgress } = useProgress();
     const router = useRouter();
@@ -134,7 +137,7 @@ export function SpeedReadingGame() {
         return () => clearInterval(timer);
     }, [isPlaying, currentWordIndex, intervalTime, gameState, words.length]);
 
-    const startGame = useCallback(() => {
+    const startGame = useCallback((useBonus = false) => {
         const randomPassage = passages[Math.floor(Math.random() * passages.length)];
         setSelectedPassage(randomPassage);
         setCurrentWordIndex(0);
@@ -142,7 +145,26 @@ export function SpeedReadingGame() {
         setScore(0);
         setGameState("reading");
         setIsPlaying(true);
+        setBonusUsed(useBonus);
     }, []);
+
+    const restartWithBonus = () => {
+        if (!selectedPassage) return;
+        showRewardAd(() => {
+          setCurrentWordIndex(0);
+          setUserAnswers({});
+          setScore(0);
+          setGameState("reading");
+          setIsPlaying(true);
+          setBonusUsed(true);
+          toast({
+              title: "Bonus Active!",
+              description: "Slower speed has been applied for this round.",
+          });
+          // Temporarily reduce WPM for the bonus round
+          setWpm(prev => Math.max(100, prev - 50)); 
+        });
+    };
 
     const resetGame = useCallback(() => {
         setGameState("setup");
@@ -151,6 +173,8 @@ export function SpeedReadingGame() {
         setUserAnswers({});
         setScore(0);
         setSelectedPassage(null);
+        setBonusUsed(false);
+        setWpm(200); // Reset WPM to default
     }, []);
 
     const togglePlay = () => {
@@ -208,7 +232,7 @@ export function SpeedReadingGame() {
                                 className="my-4"
                             />
                         </div>
-                        <Button onClick={startGame} size="lg">Start Reading</Button>
+                        <Button onClick={() => startGame(false)} size="lg">Start Reading</Button>
                     </CardContent>
                 </Card>
                 <AlertDialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
@@ -305,17 +329,18 @@ export function SpeedReadingGame() {
                         {score === questions.length ? " Perfect score! Your focus is sharp!" : " Good effort! Keep practicing."}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
+                <AlertDialogFooter className="gap-2">
                     <Button variant="outline" onClick={() => router.push("/")}>
                         Back to Menu
                     </Button>
-                    <AlertDialogAction onClick={startGame}>
-                        Play Again
+                    <Button variant="outline" onClick={resetGame}>
+                        New Passage
+                    </Button>
+                    <AlertDialogAction onClick={restartWithBonus} disabled={bonusUsed}>
+                        <Video className="mr-2 h-4 w-4" /> Try Again with Bonus
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
     );
 }
-
-    

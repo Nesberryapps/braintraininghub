@@ -13,7 +13,7 @@ import {
   // Shapes
   Circle, Square, Triangle, Hexagon, Pentagon, Octagon, Diamond, RectangleHorizontal as ShapeRectangle,
   // Other
-  type LucideProps, Timer, HelpCircle,
+  type LucideProps, Timer, HelpCircle, Video,
 } from "lucide-react";
 import { MemoryCard } from "./memory-card";
 import { useProgress } from "@/hooks/use-progress";
@@ -39,6 +39,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useAudio } from "@/hooks/use-audio";
+import { showRewardAd } from "@/services/admob";
+import { useToast } from "@/hooks/use-toast";
 
 type CardData = {
   id: number;
@@ -100,10 +102,12 @@ export function MemoryMatchGame() {
   const [timeLeft, setTimeLeft] = useState(90);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [timeBonusUsed, setTimeBonusUsed] = useState(false);
   
   const { incrementProgress } = useProgress();
   const router = useRouter();
   const playSound = useAudio();
+  const { toast } = useToast();
 
   const settings = useMemo(() => DIFFICULTY_SETTINGS[selectedDifficulty], [selectedDifficulty]);
 
@@ -128,6 +132,7 @@ export function MemoryMatchGame() {
     setMoves(0);
     setIsTimerRunning(false); // Timer starts on first click
     setShowConfetti(false);
+    setTimeBonusUsed(false);
     setGameState("playing");
   }, [selectedTheme, selectedDifficulty, settings, generateCards]);
 
@@ -136,6 +141,18 @@ export function MemoryMatchGame() {
     setShowConfetti(false);
     setGameState("setup");
   }, []);
+
+  const handleAddTime = () => {
+    if (timeBonusUsed) return;
+    showRewardAd(() => {
+      setTimeLeft(prev => prev + 10);
+      setTimeBonusUsed(true);
+      toast({
+        title: "Time Added!",
+        description: "You've got 10 extra seconds.",
+      });
+    });
+  };
 
   // Timer, win, and lose condition logic
   useEffect(() => {
@@ -313,9 +330,14 @@ export function MemoryMatchGame() {
             />
           ))}
         </div>
-        <Button variant="outline" onClick={resetGame} className="mt-6">
-          New Game
-        </Button>
+        <div className="flex gap-4 mt-6">
+            <Button variant="outline" onClick={resetGame}>
+            New Game
+            </Button>
+            <Button variant="outline" onClick={handleAddTime} disabled={timeBonusUsed}>
+                <Video className="mr-2 h-4 w-4" /> +10 Seconds
+            </Button>
+        </div>
 
         <AlertDialog open={gameState === 'completed' || gameState === 'failed'}>
           <AlertDialogContent>

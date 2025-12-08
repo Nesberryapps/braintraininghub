@@ -8,6 +8,8 @@ import { Footer } from "@/components/layout/footer";
 import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
+import { useEffect } from "react";
+import { initializeAdMob } from "@/services/admob";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -29,6 +31,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
+  useEffect(() => {
+    initializeAdMob();
+  }, []);
+  
   return (
     <html lang="en">
       <head>

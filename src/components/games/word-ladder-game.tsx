@@ -18,9 +18,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
-import { ArrowRight, Lightbulb } from "lucide-react";
+import { ArrowRight, Lightbulb, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { words3, words4, words5 } from "@/lib/word-lists";
+import { showRewardAd } from "@/services/admob";
 
 type Puzzle = {
   start: string;
@@ -167,27 +168,28 @@ export function WordLadderGame() {
     }
   };
 
-  const showHint = () => {
+  const handleShowHint = () => {
     if (!currentPuzzle || hintUsed) return;
-    
-    const currentStepIndex = ladder.length - 1;
-    const solution = currentPuzzle.solution;
-    if (currentStepIndex < solution.length - 1) {
-        const nextCorrectWord = solution[currentStepIndex + 1];
-        if (ladder[ladder.length - 1] === solution[currentStepIndex]) {
-            setLadder([...ladder, nextCorrectWord]);
-             toast({
-                title: "Hint Unlocked!",
-                description: `The next word is ${nextCorrectWord}.`,
-            });
-        } else {
-            toast({
-                title: "Hint",
-                description: `A possible next word from the solution path is '${solution[currentStepIndex + 1]}'. You may need to undo to get back on the optimal path.`
-            });
+    showRewardAd(() => {
+        const currentStepIndex = ladder.length - 1;
+        const solution = currentPuzzle.solution;
+        if (currentStepIndex < solution.length - 1) {
+            const nextCorrectWord = solution[currentStepIndex + 1];
+            if (ladder[ladder.length - 1] === solution[currentStepIndex]) {
+                setLadder([...ladder, nextCorrectWord]);
+                toast({
+                    title: "Hint Unlocked!",
+                    description: `The next word is ${nextCorrectWord}.`,
+                });
+            } else {
+                toast({
+                    title: "Hint",
+                    description: `A possible next word from the solution path is '${solution[currentStepIndex + 1]}'. You may need to undo to get back on the optimal path.`
+                });
+            }
+            setHintUsed(true);
         }
-        setHintUsed(true);
-    }
+    });
   };
 
   if (!currentPuzzle) {
@@ -243,8 +245,8 @@ export function WordLadderGame() {
             <Button variant="secondary" onClick={resetGame}>
               New Game
             </Button>
-            <Button variant="outline" onClick={showHint} disabled={hintUsed} >
-              <Lightbulb className="mr-2 h-4 w-4" />
+            <Button variant="outline" onClick={handleShowHint} disabled={hintUsed} >
+              <Video className="mr-2 h-4 w-4" />
               Hint
             </Button>
           </div>

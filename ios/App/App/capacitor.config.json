@@ -6,5 +6,7 @@
 		"androidScheme": "https"
 	},
 	"android": {},
-	"packageClassList": []
+	"packageClassList": [
+		"AdMobPlugin"
+	]
 }
