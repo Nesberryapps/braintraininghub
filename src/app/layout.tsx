@@ -1,5 +1,6 @@
 
-import type { Metadata } from "next";
+"use client";
+
 import { PT_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -17,15 +18,6 @@ const ptSans = PT_Sans({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  title: "Brain Training Hub",
-  description: "A clean, modern brain exercise app.",
-  icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
-  },
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -39,9 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <title>Brain Training Hub</title>
+        <meta name="description" content="A clean, modern brain exercise app." />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="google-adsense-account" content="ca-pub-6191158195654090" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
+        <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
