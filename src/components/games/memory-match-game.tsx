@@ -83,9 +83,9 @@ const THEMES: Theme[] = [
 ];
 
 const DIFFICULTY_SETTINGS: Record<Difficulty, { pairs: number; time: number }> = {
-    Easy: { pairs: 4, time: 25 },
-    Medium: { pairs: 6, time: 45 },
-    Hard: { pairs: 8, time: 60 },
+    Easy: { pairs: 4, time: 15 },
+    Medium: { pairs: 6, time: 35 },
+    Hard: { pairs: 8, time: 50 },
 };
 
 export function MemoryMatchGame() {
