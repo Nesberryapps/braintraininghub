@@ -1,5 +1,7 @@
+
 import { AdMob, RewardAdOptions, AdLoadInfo, RewardAdPluginEvents, AdMobRewardItem } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
+import { toast } from '@/hooks/use-toast';
 
 export async function initializeAdMob() {
   if (Capacitor.isNativePlatform()) {
@@ -11,8 +13,12 @@ export async function initializeAdMob() {
 
 export async function showRewardAd(onRewardEarned: () => void) {
   if (!Capacitor.isNativePlatform()) {
-    console.log("Web Mode: Skipping ad, granting reward.");
-    onRewardEarned(); // On web, just give the hint immediately
+    // On web, show a toast notification instead of granting the reward.
+    toast({
+      title: 'Feature Available in the App!',
+      description:
+        'To get hints and other bonuses, please download our mobile app. The app is currently in review and will be available on the App Store and Google Play Store soon!',
+    });
     return;
   }
 
