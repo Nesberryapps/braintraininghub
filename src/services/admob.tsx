@@ -36,8 +36,8 @@ export async function showRewardAd(onRewardEarned: () => void) {
 
   // Google Test Unit IDs (Swap these for Real IDs before launch!)
   const adId = Capacitor.getPlatform() === 'ios'
-    ? 'ca-app-pub-3940256099942544/1712485313'
-    : 'ca-app-pub-3940256099942544/5224354917';
+    ? 'ca-app-pub-6191158195654090/2927179100'
+    : 'ca-app-pub-6191158195654090/8956017949';
 
   try {
     // 1. Listen for the "User Finished Watching" event
