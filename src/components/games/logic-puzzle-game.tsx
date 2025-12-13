@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
 import { Lightbulb, Video } from "lucide-react";
-import { showRewardAd } from "@/services/admob.tsx";
+import { showRewardAd, showInterstitialAd } from "@/services/admob";
 
 type Puzzle = {
   sequence: number[];
@@ -85,8 +85,9 @@ export function LogicPuzzleGame() {
     setHintUsed(false);
   }, []);
 
-  const handleNextPuzzle = () => {
-    if (currentPuzzleIndex < puzzleSet.length - 1) {
+  const handleNextRiddle = async () => {
+    await showInterstitialAd(); 
+     if (currentPuzzleIndex < puzzleSet.length - 1) {
       setCurrentPuzzleIndex(currentPuzzleIndex + 1);
     } else {
       setIsGameComplete(true);
@@ -112,7 +113,7 @@ export function LogicPuzzleGame() {
     if (currentPuzzle && userAnswer === currentPuzzle.answer) {
       playSound('correct');
       setTimeout(() => {
-        handleNextPuzzle();
+        handleNextRiddle();
       }, 500);
     } else {
       playSound('incorrect');

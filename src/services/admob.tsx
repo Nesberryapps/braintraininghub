@@ -61,3 +61,24 @@ export async function showRewardAd(onRewardEarned: () => void) {
     onRewardEarned(); 
   }
 }
+// --- INTERSTITIAL ADS (Pop-ups) ---
+export async function showInterstitialAd() {
+  if (!Capacitor.isNativePlatform()) return;
+
+  // Google Test IDs (Replace with Real IDs before launch)
+  const adId = Capacitor.getPlatform() === 'ios'
+    ? 'ca-app-pub-6191158195654090/5539439502' // iOS Test Interstitial
+    : 'ca-app-pub-6191158195654090/8432377915'; // Android Test Interstitial
+
+  try {
+    // 1. Prepare
+    await AdMob.prepareInterstitial({ adId });
+    
+    // 2. Show
+    await AdMob.showInterstitial();
+    
+  } catch (error) {
+    console.error('Interstitial failed:', error);
+    // It's okay if it fails (maybe frequency cap was hit), just continue the game flow
+  }
+}

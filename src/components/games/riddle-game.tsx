@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
 import { Lightbulb, Video } from "lucide-react";
-import { showRewardAd } from "@/services/admob.tsx";
+import { showRewardAd, showInterstitialAd } from "@/services/admob";
 
 type Riddle = {
   text: string;
@@ -71,7 +71,8 @@ export function RiddleGame() {
     [currentRiddleIndex, riddleSet]
   );
 
-  const resetGame = useCallback(() => {
+  const resetGame = useCallback(async() => {
+    await showInterstitialAd();
     setRiddleSet(getShuffledRiddles());
     setCurrentRiddleIndex(0);
     setInputValue("");

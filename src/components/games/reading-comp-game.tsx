@@ -24,6 +24,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useProgress } from "@/hooks/use-progress";
 import { useToast } from "@/hooks/use-toast";
+import { showRewardAd, showInterstitialAd } from "@/services/admob";
 
 type Question = {
   question: string;
@@ -567,11 +568,12 @@ export function ReadingCompGame() {
     setGameState("reading");
   };
 
-  const resetGame = () => {
+  const resetGame = useCallback(async () => {
+    await showInterstitialAd();
     setStorySet(getShuffledStories());
     setCurrentStoryIndex(0);
     setGameState("setup");
-  };
+  }, [] );
 
   const handleAnswerChange = (questionIndex: number, answer: string) => {
     setUserAnswers((prev) => ({ ...prev, [questionIndex]: answer }));

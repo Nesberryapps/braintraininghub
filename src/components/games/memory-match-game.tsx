@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useAudio } from "@/hooks/use-audio";
-import { showRewardAd } from "@/services/admob.tsx";
+import { showRewardAd, showInterstitialAd } from "@/services/admob";
 import { useToast } from "@/hooks/use-toast";
 
 type CardData = {
@@ -137,7 +137,8 @@ export function MemoryMatchGame() {
   }, [selectedTheme, selectedDifficulty, settings, generateCards]);
 
 
-  const resetGame = useCallback(() => {
+  const resetGame = useCallback(async () => {
+    await showInterstitialAd();
     setShowConfetti(false);
     setGameState("setup");
   }, []);

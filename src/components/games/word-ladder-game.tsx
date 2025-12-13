@@ -21,7 +21,7 @@ import { useAudio } from "@/hooks/use-audio";
 import { ArrowRight, Lightbulb, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { words3, words4, words5 } from "@/lib/word-lists";
-import { showRewardAd } from "@/services/admob";
+import { showRewardAd, showInterstitialAd } from "@/services/admob";
 
 type Puzzle = {
   start: string;
@@ -85,15 +85,22 @@ export function WordLadderGame() {
     startNewPuzzle(shuffled, 0);
   }, [startNewPuzzle]);
 
-  const resetGame = useCallback(() => {
+  const resetGame = useCallback(async () => { // Make async
+    await showInterstitialAd(); // Show Ad
+    
+    // Original reset logic...
     const shuffled = getShuffledPuzzles();
     setPuzzleSet(shuffled);
-    setCurrentPuzzleIndex(0);
-    startNewPuzzle(shuffled, 0);
-    setIsGameComplete(false);
+    // ... etc
   }, [startNewPuzzle]);
   
-  const handleNextPuzzle = () => {
+  // 1. Make the function async
+  const handleNextPuzzle = async () => {
+    
+    // 2. Trigger the Ad (The game pauses here until they close the ad)
+    await showInterstitialAd();
+
+    // 3. Original Logic continues...
     const nextIndex = currentPuzzleIndex + 1;
     if (nextIndex < puzzleSet.length) {
       setCurrentPuzzleIndex(nextIndex);

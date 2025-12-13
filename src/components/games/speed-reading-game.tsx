@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { showRewardAd } from "@/services/admob.tsx";
+import { showRewardAd, showInterstitialAd } from "@/services/admob";
 import { Video } from "lucide-react";
 
 type Question = {
@@ -166,7 +166,8 @@ export function SpeedReadingGame() {
         });
     };
 
-    const resetGame = useCallback(() => {
+    const resetGame = useCallback(async() => {
+        await showInterstitialAd();
         setGameState("setup");
         setCurrentWordIndex(0);
         setIsPlaying(false);
