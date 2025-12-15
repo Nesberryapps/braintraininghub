@@ -10,13 +10,28 @@ import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
-import { initializeAdMob } from "@/services/admob.tsx";
+import { initializeAdMob } from "@/services/admob";
+import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-sans",
 });
+
+function AuthHandler({ children }: { children: React.ReactNode }) {
+  const auth = useAuth();
+  const { user, isUserLoading } = useUser();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      initiateAnonymousSignIn(auth);
+    }
+  }, [isUserLoading, user, auth]);
+
+  return <>{children}</>;
+}
+
 
 export default function RootLayout({
   children,
@@ -60,12 +75,16 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={cn("font-body antialiased", ptSans.variable)}>
-          <div className="flex flex-col min-h-screen">
-            <AppHeader />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
+          <FirebaseClientProvider>
+            <AuthHandler>
+              <div className="flex flex-col min-h-screen">
+                <AppHeader />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </AuthHandler>
+          </FirebaseClientProvider>
       </body>
     </html>
   );
