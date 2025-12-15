@@ -12,6 +12,7 @@ import Script from "next/script";
 import { useEffect } from "react";
 import { initializeAdMob } from "@/services/admob";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
+import { NotificationManager } from "@/components/NotificationManager";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -29,7 +30,10 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
     }
   }, [isUserLoading, user, auth]);
 
-  return <>{children}</>;
+  return <>
+    <NotificationManager />
+    {children}
+  </>;
 }
 
 

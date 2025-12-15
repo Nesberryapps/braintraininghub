@@ -26,7 +26,7 @@
       ]
     },
     "User": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$schema": "http://json-schema.org/draft_07/schema#",
       "title": "User",
       "type": "object",
       "description": "Represents a user of the application.",
@@ -50,6 +50,29 @@
         "username",
         "email"
       ]
+    },
+    "DeviceToken": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeviceToken",
+      "type": "object",
+      "description": "Represents a user's device token for push notifications.",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "The FCM device token."
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["ios", "android", "web"],
+          "description": "The platform of the device."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the token was created."
+        }
+      },
+      "required": ["token", "platform", "createdAt"]
     },
     "GameProgress": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -137,6 +160,18 @@
         }
       },
       {
+        "path": "/users/{userId}/deviceTokens/{deviceTokenId}",
+        "definition": {
+            "entityName": "DeviceToken",
+            "schema": { "$ref": "#/backend/entities/DeviceToken" },
+            "description": "Stores device tokens for push notifications for each user.",
+            "params": [
+                { "name": "userId", "description": "The unique identifier of the user." },
+                { "name": "deviceTokenId", "description": "The unique device token." }
+            ]
+        }
+      },
+      {
         "path": "/users/{userId}/gameProgress/{gameProgressId}",
         "definition": {
           "entityName": "GameProgress",
@@ -193,6 +228,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability. User data and game progress are organized under user-specific subcollections, enabling simple path-based security rules. Notification schedules are also stored under user subcollections. This design eliminates the need for complex `get()` calls in security rules and supports atomic operations. The structure also facilitates simple `list` operations and maintains data integrity for ownership, timestamps, and denormalized data.\n\n*   User data is stored under `/users/{userId}`.\n*   Game progress is stored under `/users/{userId}/gameProgress/{gameProgressId}`.\n*   Notification schedules are stored under `/users/{userId}/notificationSchedules/{notificationScheduleId}`.\n*   Games are stored in the `/games/{gameId}` collection.\n\nThis approach adheres to the principle of Structural Segregation (Homogeneous Security Posture), as each collection or subcollection contains documents with similar access requirements. It follows the Access Modeling guidelines by using path-based ownership for user-owned data (users, game progress, and notification schedules)."
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability. User data and game progress are organized under user-specific subcollections, enabling simple path-based security rules. Notification schedules are also stored under user subcollections. This design eliminates the need for complex `get()` calls in security rules and supports atomic operations. The structure also facilitates simple `list` operations and maintains data integrity for ownership, timestamps, and denormalized data.\n\n*   User data is stored under `/users/{userId}`.\n*   Device tokens for push notifications are stored under `/users/{userId}/deviceTokens/{deviceTokenId}`.\n*   Game progress is stored under `/users/{userId}/gameProgress/{gameProgressId}`.\n*   Notification schedules are stored under `/users/{userId}/notificationSchedules/{notificationScheduleId}`.\n*   Games are stored in the `/games/{gameId}` collection.\n\nThis approach adheres to the principle of Structural Segregation (Homogeneous Security Posture), as each collection or subcollection contains documents with similar access requirements. It follows the Access Modeling guidelines by using path-based ownership for user-owned data (users, game progress, notification schedules, and device tokens)."
   }
 }
