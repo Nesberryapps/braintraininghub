@@ -1,0 +1,198 @@
+{
+  "entities": {
+    "Game": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Game",
+      "type": "object",
+      "description": "Represents a brain exercise game.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Game entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the game (e.g., Memory Match, Logic Puzzle)."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the game."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email"
+      ]
+    },
+    "GameProgress": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GameProgress",
+      "type": "object",
+      "description": "Represents the progress of a user in a specific game.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the GameProgress entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N GameProgress)"
+        },
+        "gameId": {
+          "type": "string",
+          "description": "Reference to Game. (Relationship: Game 1:N GameProgress)"
+        },
+        "gamesCompleted": {
+          "type": "number",
+          "description": "The number of times the user has completed this game."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "gameId",
+        "gamesCompleted"
+      ]
+    },
+    "NotificationSchedule": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "NotificationSchedule",
+      "type": "object",
+      "description": "Represents a scheduled notification for a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the NotificationSchedule entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N NotificationSchedule)"
+        },
+        "scheduledTime": {
+          "type": "string",
+          "description": "The scheduled time for the notification (e.g., '08:00', '18:00')."
+        },
+        "message": {
+          "type": "string",
+          "description": "The message to be displayed in the notification."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "scheduledTime",
+        "message"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Path-based ownership: Only the user can read/write their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/gameProgress/{gameProgressId}",
+        "definition": {
+          "entityName": "GameProgress",
+          "schema": {
+            "$ref": "#/backend/entities/GameProgress"
+          },
+          "description": "Stores game progress for each user. Path-based ownership: Only the user can read/write their own game progress.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "gameProgressId",
+              "description": "The unique identifier of the game progress entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/notificationSchedules/{notificationScheduleId}",
+        "definition": {
+          "entityName": "NotificationSchedule",
+          "schema": {
+            "$ref": "#/backend/entities/NotificationSchedule"
+          },
+          "description": "Stores notification schedules for each user. Path-based ownership: Only the user can read/write their own notification schedules.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "notificationScheduleId",
+              "description": "The unique identifier of the notification schedule entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/games/{gameId}",
+        "definition": {
+          "entityName": "Game",
+          "schema": {
+            "$ref": "#/backend/entities/Game"
+          },
+          "description": "Stores game information. Publicly readable.",
+          "params": [
+            {
+              "name": "gameId",
+              "description": "The unique identifier of the game."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability. User data and game progress are organized under user-specific subcollections, enabling simple path-based security rules. Notification schedules are also stored under user subcollections. This design eliminates the need for complex `get()` calls in security rules and supports atomic operations. The structure also facilitates simple `list` operations and maintains data integrity for ownership, timestamps, and denormalized data.\n\n*   User data is stored under `/users/{userId}`.\n*   Game progress is stored under `/users/{userId}/gameProgress/{gameProgressId}`.\n*   Notification schedules are stored under `/users/{userId}/notificationSchedules/{notificationScheduleId}`.\n*   Games are stored in the `/games/{gameId}` collection.\n\nThis approach adheres to the principle of Structural Segregation (Homogeneous Security Posture), as each collection or subcollection contains documents with similar access requirements. It follows the Access Modeling guidelines by using path-based ownership for user-owned data (users, game progress, and notification schedules)."
+  }
+}
