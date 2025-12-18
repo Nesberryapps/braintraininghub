@@ -10,7 +10,6 @@ import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
-import { initializeAdMob } from "@/services/admob";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
 import { NotificationManager } from "@/components/NotificationManager";
 
@@ -42,10 +41,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-
-  useEffect(() => {
-    initializeAdMob();
-  }, []);
   
   return (
     <html lang="en">

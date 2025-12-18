@@ -1,13 +1,22 @@
 
+'use client';
+
 import { AdMob, RewardAdOptions, AdLoadInfo, RewardAdPluginEvents, AdMobRewardItem } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { toast } from '@/hooks/use-toast';
 
+let isInitialized = false;
+
 export async function initializeAdMob() {
-  if (Capacitor.isNativePlatform()) {
-    await AdMob.initialize({
-        initializeForTesting: true,
-    });
+  if (Capacitor.isNativePlatform() && !isInitialized) {
+    try {
+        await AdMob.initialize({
+            initializeForTesting: true,
+        });
+        isInitialized = true;
+    } catch (e) {
+        console.error("AdMob initialization failed", e);
+    }
   }
 }
 
@@ -29,10 +38,11 @@ const AppStoreIcons = () => (
 
 
 export async function showRewardAd(onRewardEarned: () => void) {
+  await initializeAdMob();
   if (!Capacitor.isNativePlatform()) {
     // On web, show a toast notification instead of granting the reward.
     toast({
-      title: 'Feature Available in the App!',
+      title: 'App Now Available!',
       description: <AppStoreIcons />,
     });
     return;
@@ -63,6 +73,7 @@ export async function showRewardAd(onRewardEarned: () => void) {
 }
 // --- INTERSTITIAL ADS (Pop-ups) ---
 export async function showInterstitialAd() {
+  await initializeAdMob();
   if (!Capacitor.isNativePlatform()) return;
 
   // Google Test IDs (Replace with Real IDs before launch)
