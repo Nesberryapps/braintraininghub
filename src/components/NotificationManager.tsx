@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, App as CapacitorApp } from '@capacitor/core';
 import {
   PushNotifications,
   Token,
@@ -20,30 +21,11 @@ export function NotificationManager() {
     if (isUserLoading || !user || !Capacitor.isNativePlatform()) {
       return;
     }
-
-    const registerNotifications = async () => {
-      let permStatus = await PushNotifications.checkPermissions();
-
-      if (permStatus.receive === 'prompt') {
-        permStatus = await PushNotifications.requestPermissions();
-      }
-
-      if (permStatus.receive !== 'granted') {
-        // User denied permissions, we can't do anything.
-        console.log('User denied push notification permissions.');
-        return;
-      }
-
-      // On success, we should be able to receive notifications.
-      // Now, register with FCM to get a token.
-      await PushNotifications.register();
-    };
-
+    
+    // --- Define functions to be called by listeners ---
     const addListeners = async () => {
-      // On success, we should be ableto receive notifications
       await PushNotifications.addListener('registration', (token: Token) => {
         console.log('Push registration success, token: ' + token.value);
-        // Save the token to Firestore
         if (user) {
             const tokenRef = doc(firestore, `users/${user.uid}/deviceTokens/${token.value}`);
             setDocumentNonBlocking(tokenRef, {
@@ -54,18 +36,40 @@ export function NotificationManager() {
         }
       });
 
-      // Some issue with our setup and push will not work
       await PushNotifications.addListener('registrationError', (error: any) => {
         console.error('Error on registration: ' + JSON.stringify(error));
       });
     };
 
-    registerNotifications();
+    const registerNotifications = async () => {
+      let permStatus = await PushNotifications.checkPermissions();
+
+      if (permStatus.receive === 'prompt') {
+        permStatus = await PushNotifications.requestPermissions();
+      }
+
+      if (permStatus.receive !== 'granted') {
+        console.log('User denied push notification permissions.');
+        return;
+      }
+      
+      await PushNotifications.register();
+    };
+
+    // --- Safer initialization ---
+    // Only run registration logic once the app is fully active.
+    CapacitorApp.addListener('appStateChange', (state) => {
+        if (state.isActive) {
+            registerNotifications();
+        }
+    });
+
     addListeners();
 
     // Clean up listeners on component unmount
     return () => {
-      PushNotifications.removeAllListeners();
+        PushNotifications.removeAllListeners().catch(err => console.error("Could not remove all listeners", err));
+        CapacitorApp.removeAllListeners().catch(err => console.error("Could not remove all listeners", err));
     };
   }, [user, isUserLoading, firestore]);
 
