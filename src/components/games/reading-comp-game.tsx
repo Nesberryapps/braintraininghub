@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { useProgress } from "@/hooks/use-progress";
 import { useToast } from "@/hooks/use-toast";
 import { showRewardAd, showInterstitialAd } from "@/services/admob";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 type Question = {
   question: string;
@@ -563,6 +564,7 @@ export function ReadingCompGame() {
     storySet.length > 0 && currentStoryIndex >= storySet.length - 1;
 
   const startGame = () => {
+    logEvent(getAnalytics(), 'play_a_game', { game_name: 'ReadingComp' });
     setUserAnswers({});
     setScore(0);
     setGameState("reading");
@@ -610,6 +612,11 @@ export function ReadingCompGame() {
       startGame();
     }
   };
+  
+  const handleStartFromTutorial = () => {
+    setIsTutorialOpen(false);
+    startGame();
+  };
 
   if (gameState === "setup" || !currentStory) {
     return (
@@ -638,10 +645,7 @@ export function ReadingCompGame() {
                 </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                <AlertDialogAction onClick={() => {
-                    setIsTutorialOpen(false);
-                    startGame();
-                }}>
+                <AlertDialogAction onClick={handleStartFromTutorial}>
                     Start Reading
                 </AlertDialogAction>
                 </AlertDialogFooter>

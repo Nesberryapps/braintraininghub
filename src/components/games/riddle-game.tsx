@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
 import { Lightbulb, Video } from "lucide-react";
 import { showRewardAd, showInterstitialAd } from "@/services/admob";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 type Riddle = {
   text: string;
@@ -72,6 +73,7 @@ export function RiddleGame() {
   );
 
   const resetGame = useCallback(async() => {
+    logEvent(getAnalytics(), 'play_a_game', { game_name: 'Riddle' });
     await showInterstitialAd();
     setRiddleSet(getShuffledRiddles());
     setCurrentRiddleIndex(0);
@@ -132,6 +134,11 @@ export function RiddleGame() {
             description: currentRiddle.hint,
         });
     });
+  };
+
+  const handleStartFromTutorial = () => {
+    logEvent(getAnalytics(), 'play_a_game', { game_name: 'Riddle' });
+    setIsTutorialOpen(false);
   };
 
   if (!currentRiddle) {
@@ -205,7 +212,7 @@ export function RiddleGame() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setIsTutorialOpen(false)}>Let's Go!</AlertDialogAction>
+              <AlertDialogAction onClick={handleStartFromTutorial}>Let's Go!</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
       </AlertDialog>

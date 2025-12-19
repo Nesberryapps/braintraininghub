@@ -28,6 +28,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { showRewardAd, showInterstitialAd } from "@/services/admob";
 import { Video } from "lucide-react";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 type Question = {
   question: string;
@@ -138,6 +139,7 @@ export function SpeedReadingGame() {
     }, [isPlaying, currentWordIndex, intervalTime, gameState, words.length]);
 
     const startGame = useCallback((useBonus = false) => {
+        logEvent(getAnalytics(), 'play_a_game', { game_name: 'SpeedReading' });
         const randomPassage = passages[Math.floor(Math.random() * passages.length)];
         setSelectedPassage(randomPassage);
         setCurrentWordIndex(0);
@@ -151,6 +153,7 @@ export function SpeedReadingGame() {
     const restartWithBonus = () => {
         if (!selectedPassage) return;
         showRewardAd(() => {
+          logEvent(getAnalytics(), 'play_a_game', { game_name: 'SpeedReading_Bonus' });
           setCurrentWordIndex(0);
           setUserAnswers({});
           setScore(0);
@@ -209,6 +212,11 @@ export function SpeedReadingGame() {
         }
         setGameState("results");
     };
+
+    const handleStartFromTutorial = () => {
+        setIsTutorialOpen(false);
+        startGame();
+    };
     
     const readingProgress = words.length > 0 ? (currentWordIndex / words.length) * 100 : 0;
 
@@ -245,10 +253,7 @@ export function SpeedReadingGame() {
                         </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                        <AlertDialogAction onClick={() => {
-                            setIsTutorialOpen(false);
-                            startGame();
-                        }}>Start</AlertDialogAction>
+                        <AlertDialogAction onClick={handleStartFromTutorial}>Start</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

@@ -22,6 +22,7 @@ import { ArrowRight, Lightbulb, Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { words3, words4, words5 } from "@/lib/word-lists";
 import { showRewardAd, showInterstitialAd } from "@/services/admob";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 type Puzzle = {
   start: string;
@@ -73,6 +74,7 @@ export function WordLadderGame() {
   const startNewPuzzle = useCallback((puzzles: Puzzle[], index: number) => {
     const puzzle = puzzles[index];
     if (puzzle) {
+      logEvent(getAnalytics(), 'play_a_game', { game_name: 'WordLadder' });
       setLadder([puzzle.start]);
       setInputValue("");
       setHintUsed(false);
@@ -88,11 +90,12 @@ export function WordLadderGame() {
   const resetGame = useCallback(async () => { // Make async
     await showInterstitialAd(); // Show Ad
     
-    // Original reset logic...
     const shuffled = getShuffledPuzzles();
     setPuzzleSet(shuffled);
-    // ... etc
-  }, [startNewPuzzle]);
+    setCurrentPuzzleIndex(0);
+    startNewPuzzle(shuffled, 0);
+    setIsGameComplete(false);
+  }, [startNewPuzzle, puzzleSet]);
   
   // 1. Make the function async
   const handleNextPuzzle = async () => {
@@ -199,6 +202,10 @@ export function WordLadderGame() {
     });
   };
 
+  const handleStartFromTutorial = () => {
+    setIsTutorialOpen(false);
+  };
+
   if (!currentPuzzle) {
     return <p>Loading...</p>;
   }
@@ -286,7 +293,7 @@ export function WordLadderGame() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setIsTutorialOpen(false)}>Let's Climb!</AlertDialogAction>
+            <AlertDialogAction onClick={handleStartFromTutorial}>Let's Climb!</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

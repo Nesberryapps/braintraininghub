@@ -20,6 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/hooks/use-audio";
 import { Lightbulb, Video } from "lucide-react";
 import { showRewardAd, showInterstitialAd } from "@/services/admob";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 type Puzzle = {
   sequence: number[];
@@ -78,6 +79,7 @@ export function LogicPuzzleGame() {
   );
 
   const resetGame = useCallback(() => {
+    logEvent(getAnalytics(), 'play_a_game', { game_name: 'LogicPuzzle' });
     setPuzzleSet(getShuffledPuzzles());
     setCurrentPuzzleIndex(0);
     setInputValue("");
@@ -134,6 +136,11 @@ export function LogicPuzzleGame() {
         description: currentPuzzle.hint,
       });
     });
+  };
+
+  const handleStartGameFromTutorial = () => {
+    logEvent(getAnalytics(), 'play_a_game', { game_name: 'LogicPuzzle' });
+    setIsTutorialOpen(false)
   };
 
   if (!currentPuzzle) {
@@ -210,7 +217,7 @@ export function LogicPuzzleGame() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setIsTutorialOpen(false)}>Let's Go!</AlertDialogAction>
+              <AlertDialogAction onClick={handleStartGameFromTutorial}>Let's Go!</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
       </AlertDialog>

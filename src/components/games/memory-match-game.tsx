@@ -41,6 +41,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAudio } from "@/hooks/use-audio";
 import { showRewardAd, showInterstitialAd } from "@/services/admob";
 import { useToast } from "@/hooks/use-toast";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 type CardData = {
   id: number;
@@ -125,6 +126,7 @@ export function MemoryMatchGame() {
   }, []);
 
   const startGame = useCallback(() => {
+    logEvent(getAnalytics(), 'play_a_game', { game_name: 'MemoryMatch' });
     setTimeLeft(settings.time);
     setCards(generateCards(selectedTheme, selectedDifficulty));
     setFlippedCards([]);

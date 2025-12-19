@@ -4,6 +4,7 @@
 import { AdMob, RewardAdOptions, AdLoadInfo, RewardAdPluginEvents, AdMobRewardItem } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 import { toast } from '@/hooks/use-toast';
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 let isInitialized = false;
 
@@ -57,6 +58,7 @@ export async function showRewardAd(onRewardEarned: () => void) {
     // 1. Listen for the "User Finished Watching" event
     const listener = await AdMob.addListener(RewardAdPluginEvents.Rewarded, (reward: AdMobRewardItem) => {
       console.log('User earned reward:', reward);
+      logEvent(getAnalytics(), 'ads_conversion', { ad_type: 'rewarded' });
       onRewardEarned(); // <--- This runs your specific game logic (Give Hint / Add Time)
       listener.remove();
     });
@@ -84,6 +86,7 @@ export async function showInterstitialAd() {
   try {
     // 1. Prepare
     await AdMob.prepareInterstitial({ adId });
+    logEvent(getAnalytics(), 'ads_conversion', { ad_type: 'interstitial' });
     
     // 2. Show
     await AdMob.showInterstitial();
