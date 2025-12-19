@@ -23,7 +23,7 @@ jobs:
 
       - name: Build Web Assets
         run: npm run build
-     
+
       - name: Sync iOS Project
         run: npx cap sync ios
 
@@ -52,13 +52,11 @@ jobs:
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           echo -n "$PROFILE_BASE64" | base64 --decode -o $PP_PATH
           
-          # Extract UUID to name file correctly
           UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" /dev/stdin <<< $(security cms -D -i $PP_PATH))
           
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
-      # --- THE FIX: Apply Team ID to ALL targets ---
       - name: Configure Project Signing (Ruby)
         run: |
           sudo gem install xcodeproj
@@ -77,7 +75,7 @@ jobs:
                 config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'Brain Training Hub Pro Store'
                 config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
                 
-                # Enable Push Notifications (Required for BTH)
+                # Enable Push Notifications
                 target.attributes['SystemCapabilities'] = {
                   'com.apple.Push' => { 'enabled' => 1 }
                 }
