@@ -59,7 +59,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
       # --- THE FIX: Apply Team ID to ALL targets ---
-      - name: Configure Project Signing (Ruby)
+     - name: Configure Project Signing (Ruby)
         run: |
           sudo gem install xcodeproj
           
@@ -68,22 +68,19 @@ jobs:
           project_path = 'ios/App/App.xcodeproj'
           project = Xcodeproj::Project.open(project_path)
           
-          # Iterate through EVERY target (App + AdMob Pods)
           project.targets.each do |target|
             target.build_configurations.each do |config|
-              # 1. Apply Team ID to EVERYTHING
               config.build_settings['DEVELOPMENT_TEAM'] = '5BYJT9QTKZ'
               
-              # 2. Specific settings ONLY for the Main App
               if target.name == 'App'
                 config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
-                # VERIFY THIS NAME MATCHES YOUR APPLE PORTAL PROFILE EXACTLY:
                 config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'Brain Training Hub Pro Store'
                 config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
-                # Enable Push Notifications
-              target.attributes['SystemCapabilities'] = {
-                'com.apple.Push' => { 'enabled' => 1 }
-              }
+                
+                # Enable Push Notifications (Required for BTH)
+                target.attributes['SystemCapabilities'] = {
+                  'com.apple.Push' => { 'enabled' => 1 }
+                }
               end
             end
           end
