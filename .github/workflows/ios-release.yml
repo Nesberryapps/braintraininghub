@@ -80,6 +80,10 @@ jobs:
                 # VERIFY THIS NAME MATCHES YOUR APPLE PORTAL PROFILE EXACTLY:
                 config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'Brain Training Hub Pro Store'
                 config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
+                # Enable Push Notifications
+              target.attributes['SystemCapabilities'] = {
+                'com.apple.Push' => { 'enabled' => 1 }
+              }
                 config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = 'Apple Distribution'
               end
             end
