@@ -67,30 +67,21 @@ jobs:
           project = Xcodeproj::Project.open(project_path)
           
           project.targets.each do |target|
-            # 1. Update Build Settings (Signings)
             target.build_configurations.each do |config|
+              # 1. Apply Team ID to EVERYTHING
               config.build_settings['DEVELOPMENT_TEAM'] = '5BYJT9QTKZ'
               
+              # 2. Specific settings ONLY for the Main App
               if target.name == 'App'
                 config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
-                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'Brain Training Hub Pro Store'
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = 'MoneyPree Store'
                 config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
               end
-            end
-
-            # 2. Update Target Attributes (Capabilities) - OUTSIDE the config loop
-            if target.name == 'App'
-               # Ensure attributes hash exists
-               target.attributes = {} unless target.attributes
-               # Enable Push Notifications
-               target.attributes['SystemCapabilities'] = {
-                 'com.apple.Push' => { 'enabled' => 1 }
-               }
             end
           end
           
           project.save
-          puts '✅ Signing and Capabilities updated successfully!'
+          puts '✅ Signing settings updated successfully for App target!'
           "
 
       - name: Build iOS App
