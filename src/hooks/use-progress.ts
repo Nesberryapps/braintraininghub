@@ -22,6 +22,7 @@ export function useProgress() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    // This check ensures localStorage is only accessed on the client-side.
     if (typeof window === "undefined") {
       return;
     }

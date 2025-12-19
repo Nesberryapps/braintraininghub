@@ -22,30 +22,24 @@ const AdBanner = ({
   className = '',
 }: AdBannerProps) => {
   const adRef = useRef<HTMLDivElement>(null);
-  const isAdLoaded = useRef(false);
 
   useEffect(() => {
-    if (isAdLoaded.current) {
-      return;
-    }
-    
-    // Use an interval to check for the container's width, as it might not be available on initial render.
-    const interval = setInterval(() => {
-      if (adRef.current && adRef.current.offsetWidth > 0) {
-        try {
-          if (!isAdLoaded.current) {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-            isAdLoaded.current = true; // Mark as loaded
-          }
-        } catch (err) {
-          console.error(`AdSense error for slot ${dataAdSlot}:`, err);
+    // This entire effect only runs on the client-side
+    const loadAd = () => {
+      try {
+        if (window.adsbygoogle) {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
         }
-        clearInterval(interval); // Stop checking once the ad is loaded or attempted
+      } catch (err) {
+        console.error(`AdSense error for slot ${dataAdSlot}:`, err);
       }
-    }, 100); // Check every 100ms
+    };
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
+    // Use a small timeout to allow the ad container to be measured by the browser
+    const timeout = setTimeout(loadAd, 100);
+
+    // Cleanup timeout on component unmount
+    return () => clearTimeout(timeout);
   }, [dataAdSlot]);
 
   return (
