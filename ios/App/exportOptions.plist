@@ -8,8 +8,8 @@
 	<string>manual</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.nesberry.braintraining</key>
-		<string>Brain Training Hub App Store</string>
+		<key>com.nesberry.braintraininghub</key>
+		<string>Brain Training Hub Pro Store</string>
 	</dict>
 	<key>teamID</key>
 	<string>5BYJT9QTKZ</string>
