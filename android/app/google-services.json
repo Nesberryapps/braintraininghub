@@ -43,6 +43,42 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1080250387073:android:0281cdaf67b5ff71fedb80",
+        "android_client_info": {
+          "package_name": "com.nesberry.braintraining"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1080250387073-31tnpfnevonev8knpav5aqij485pkh66.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVzFHBXPixXHuef4ZGbr9cQqKEa8iVyOM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1080250387073-31tnpfnevonev8knpav5aqij485pkh66.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1080250387073-tdp33huj343bu1t9j5gkq1s95rjmktff.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nesberry.braintraininghub"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1080250387073:android:c3dca6344b53c29dfedb80",
         "android_client_info": {
           "package_name": "com.nesberry.braintraininghub"
