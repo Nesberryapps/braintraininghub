@@ -59,21 +59,6 @@ service cloud.firestore {
       allow create: if isOwner(userId) && hasValidIdOnCreate(userId);
       allow update: if isExistingOwner(userId) && idIsImmutable();
       allow delete: if false;
-
-      /**
-       * @description Secures a user's device tokens for push notifications.
-       * @path /users/{userId}/deviceTokens/{deviceTokenId}
-       * @allow A signed-in user (auth.uid: 'user_abc') can (create) and (delete) their own device tokens.
-       * @deny A user cannot update a token, they should create a new one.
-       * @principle Enforces ownership and ensures tokens are managed securely per-device.
-       */
-      match /deviceTokens/{deviceTokenId} {
-          allow get: if isOwner(userId);
-          allow list: if isOwner(userId);
-          allow create: if isOwner(userId);
-          allow delete: if isOwner(userId);
-          allow update: if false; // Tokens should be created/deleted, not updated.
-      }
     }
 
     /**
@@ -123,5 +108,4 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
-  }
-}
+  

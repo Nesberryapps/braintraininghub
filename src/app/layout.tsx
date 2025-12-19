@@ -1,4 +1,3 @@
-
 "use client";
 
 import { PT_Sans } from "next/font/google";
@@ -11,7 +10,6 @@ import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
-import { NotificationManager } from "@/components/NotificationManager";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -29,10 +27,7 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
     }
   }, [isUserLoading, user, auth]);
 
-  return <>
-    <NotificationManager />
-    {children}
-  </>;
+  return <>{children}</>;
 }
 
 

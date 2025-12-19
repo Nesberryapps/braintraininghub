@@ -7,7 +7,6 @@
 	},
 	"android": {},
 	"packageClassList": [
-		"AdMobPlugin",
-		"PushNotificationsPlugin"
+		"AdMobPlugin"
 	]
 }
