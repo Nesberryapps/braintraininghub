@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.nesberry.braintraining',
+  appId: 'com.nesberry.braintraininghub',
   appName: 'Brain Training Hub',
   webDir: 'out',
   server: {
