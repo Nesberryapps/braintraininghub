@@ -59,7 +59,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
 
       # --- THE FIX: Apply Team ID to ALL targets ---
-     - name: Configure Project Signing (Ruby)
+      - name: Configure Project Signing (Ruby)
         run: |
           sudo gem install xcodeproj
           
