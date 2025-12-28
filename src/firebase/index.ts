@@ -3,7 +3,8 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
@@ -23,6 +24,19 @@ export function initializeFirebase() {
         console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
       }
       firebaseApp = initializeApp(firebaseConfig);
+    }
+    
+    // Initialize App Check
+    if (typeof window !== 'undefined') {
+        const reCaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+        if (reCaptchaKey) {
+            initializeAppCheck(firebaseApp, {
+                provider: new ReCaptchaV3Provider(reCaptchaKey),
+                isTokenAutoRefreshEnabled: true
+            });
+        } else {
+            console.warn("reCAPTCHA Site Key is not found. App Check will not be enabled.");
+        }
     }
 
     return getSdks(firebaseApp);
