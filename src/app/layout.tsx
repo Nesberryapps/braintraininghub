@@ -1,3 +1,4 @@
+
 "use client";
 
 import { PT_Sans } from "next/font/google";
@@ -10,6 +11,7 @@ import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -36,6 +38,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const recaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
   
   return (
     <html lang="en">
@@ -71,12 +74,14 @@ export default function RootLayout({
       <body className={cn("font-body antialiased", ptSans.variable)}>
           <FirebaseClientProvider>
             <AuthHandler>
-              <div className="flex flex-col min-h-screen">
-                <AppHeader />
-                <main className="flex-grow">{children}</main>
-                <Footer />
-              </div>
-              <Toaster />
+              <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey ?? ""}>
+                <div className="flex flex-col min-h-screen">
+                  <AppHeader />
+                  <main className="flex-grow">{children}</main>
+                  <Footer />
+                </div>
+                <Toaster />
+              </GoogleReCaptchaProvider>
             </AuthHandler>
           </FirebaseClientProvider>
       </body>

@@ -1,6 +1,8 @@
+
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 declare global {
   interface Window {
@@ -22,9 +24,34 @@ const AdBanner = ({
   className = '',
 }: AdBannerProps) => {
   const adRef = useRef<HTMLDivElement>(null);
+  const [isVerified, setIsVerified] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
+  const handleRecaptcha = useCallback(async () => {
+    if (!executeRecaptcha) {
+      console.log("Recaptcha not yet available");
+      return;
+    }
+
+    try {
+      const token = await executeRecaptcha('ad_view');
+      // In a real app, you would send this token to your backend for verification.
+      // For this implementation, we'll proceed if a token is successfully generated.
+      if (token) {
+        setIsVerified(true);
+      }
+    } catch (error) {
+      console.error("reCAPTCHA execution failed:", error);
+    }
+  }, [executeRecaptcha]);
 
   useEffect(() => {
-    // This entire effect only runs on the client-side
+    handleRecaptcha();
+  }, [handleRecaptcha]);
+
+  useEffect(() => {
+    if (!isVerified) return;
+
     const loadAd = () => {
       try {
         if (window.adsbygoogle) {
@@ -35,12 +62,14 @@ const AdBanner = ({
       }
     };
 
-    // Use a small timeout to allow the ad container to be measured by the browser
     const timeout = setTimeout(loadAd, 100);
 
-    // Cleanup timeout on component unmount
     return () => clearTimeout(timeout);
-  }, [dataAdSlot]);
+  }, [dataAdSlot, isVerified]);
+
+  if (!isVerified) {
+    return <div className={className} style={{ minHeight: '50px', display: 'block' }}></div>;
+  }
 
   return (
     <div ref={adRef} className={className} style={{ minHeight: '50px', display: 'block' }}>
@@ -51,6 +80,7 @@ const AdBanner = ({
         data-ad-slot={dataAdSlot}
         data-ad-format={dataAdFormat}
         data-full-width-responsive={dataFullWidthResponsive.toString()}
+        data-adtest="on" // Use "on" for testing, remove for production
       ></ins>
     </div>
   );
