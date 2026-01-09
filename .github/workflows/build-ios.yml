@@ -1,4 +1,3 @@
-
 name: Build iOS App
 
 on:
@@ -9,21 +8,22 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '16'
 
       - name: Install dependencies
         run: npm install
 
       - name: Sync Capacitor iOS project
-        run: npm run mobile:build:ios
+        run: npx capacitor sync ios
 
       - name: Commit native project changes
         run: |
