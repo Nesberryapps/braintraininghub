@@ -21,7 +21,7 @@ export function MemoryCard({ icon: Icon, isFlipped, onClick }: MemoryCardProps) 
           isFlipped && "[transform:rotateY(180deg)]"
         )}
       >
-        <div className="absolute w-full h-full [backface-visibility:hidden] flex items-center justify-center bg-primary rounded-lg shadow-md border border-primary/50 group-hover:bg-primary/90 transition-colors">
+        <div className="absolute w-full h-full [backface-visibility:hidden] flex items-center justify-center bg-secondary rounded-lg shadow-md border border-secondary/50 group-hover:bg-secondary/80 transition-colors">
           {/* Card Back */}
         </div>
         <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex items-center justify-center bg-card rounded-lg shadow-md">
