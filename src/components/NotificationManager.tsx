@@ -10,6 +10,7 @@ import {
 import { useUser, useFirestore } from '@/firebase';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { doc } from 'firebase/firestore';
+import { AdMob } from '@capacitor-community/admob';
 
 // This component is responsible for managing push notification permissions and tokens.
 export function NotificationManager() {
@@ -17,6 +18,12 @@ export function NotificationManager() {
   const firestore = useFirestore();
 
   useEffect(() => {
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+      AdMob.requestTrackingAuthorization().then(res => {
+        console.log('AdMob tracking authorization:', res);
+      });
+    }
+
     // Wait until we know who the user is and ensure we're on a native platform.
     if (isUserLoading || !user || !Capacitor.isNativePlatform()) {
       return;

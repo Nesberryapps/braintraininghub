@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Brain Training Hub</string>
+	<string>Brain Training Hub</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -46,15 +46,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>GADApplicationIdentifier</key>
-<string>ca-app-pub-6191158195654090~4591614561</string>
-<key>SKAdNetworkItems</key>
-<array>
-  <dict>
-    <key>SKAdNetworkIdentifier</key>
-    <string>cstr6suwn9.skadnetwork</string>
-  </dict>
-</array>
-<key>NSUserTrackingUsageDescription</key>
-<string>This identifier will be used to deliver personalized ads to you.</string>
+	<string>ca-app-pub-6191158195654090~8897034544</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This identifier will be used to deliver personalized ads to you.</string>
 </dict>
 </plist>
