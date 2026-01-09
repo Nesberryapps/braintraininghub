@@ -11,13 +11,27 @@ import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
-import { initializePushNotifications } from "@/services/notifications"; // Import the new service
+import { initializePushNotifications } from "@/services/notifications";
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-sans",
 });
+
+// Initializer component now uses the useAuth hook
+function Initializer() {
+  const auth = useAuth();
+
+  useEffect(() => {
+    // Pass the auth object to the initialization function
+    if (auth) {
+      initializePushNotifications(auth);
+    }
+  }, [auth]); // Rerun when auth object becomes available
+
+  return null; // This component doesn't render anything
+}
 
 function AuthHandler({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -30,15 +44,6 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
   }, [isUserLoading, user, auth]);
 
   return <>{children}</>;
-}
-
-// New Initializer component
-function Initializer() {
-  useEffect(() => {
-    initializePushNotifications();
-  }, []);
-
-  return null; // This component doesn't render anything
 }
 
 export default function RootLayout({
@@ -80,7 +85,7 @@ export default function RootLayout({
       <body className={cn("font-body antialiased", ptSans.variable)}>
           <FirebaseClientProvider>
             <AuthHandler>
-              <Initializer /> {/* Add the initializer */}
+              <Initializer />
               <div className="flex flex-col min-h-screen">
                 <AppHeader />
                 <main className="flex-grow">{children}</main>
