@@ -7,7 +7,6 @@ import { Auth } from 'firebase/auth';
 
 let isInitialized = false;
 
-// This function now accepts auth and db instances
 const saveTokenToFirestore = async (auth: Auth, db: Firestore, token: string) => {
   const user = auth.currentUser;
   if (!user) {
@@ -28,7 +27,6 @@ const saveTokenToFirestore = async (auth: Auth, db: Firestore, token: string) =>
   }
 };
 
-// This function now accepts the auth instance to derive other services
 export const initializePushNotifications = async (auth: Auth) => {
   if (!Capacitor.isNativePlatform() || isInitialized) {
     return;
@@ -39,17 +37,26 @@ export const initializePushNotifications = async (auth: Auth) => {
 
   const db = getFirestore(auth.app);
 
-  const permStatus = await PushNotifications.requestPermissions();
+  // Check permission status
+  let permStatus = await PushNotifications.checkPermissions();
 
-  if (permStatus.receive === 'granted') {
-    await PushNotifications.register();
-  } else {
-    console.warn('User denied push notification permissions.');
+  // If permission is not yet determined, prompt the user
+  if (permStatus.receive === 'prompt') {
+    permStatus = await PushNotifications.requestPermissions();
   }
 
+  // If permission is not granted, do not proceed
+  if (permStatus.receive !== 'granted') {
+    console.warn('User denied push notification permissions.');
+    return;
+  }
+
+  // If permission is granted, register the device for push notifications
+  await PushNotifications.register();
+
+  // Add all the necessary event listeners
   PushNotifications.addListener('registration', (token: Token) => {
     console.log('Push registration success, token:', token.value);
-    // Pass the auth and db instances to the save function
     saveTokenToFirestore(auth, db, token.value);
   });
 
