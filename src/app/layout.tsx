@@ -9,15 +9,19 @@ import { Footer } from "@/components/layout/footer";
 import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback, createContext, useContext } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
-import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3';
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-sans",
 });
+
+// Create a context to hold the verification status
+const RecaptchaContext = createContext({ isVerified: false });
+export const useRecaptcha = () => useContext(RecaptchaContext);
 
 function AuthHandler({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -30,6 +34,36 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
   }, [isUserLoading, user, auth]);
 
   return <>{children}</>;
+}
+
+function RecaptchaVerifier({ children }: { children: React.ReactNode }) {
+  const { executeRecaptcha } = useGoogleReCaptcha();
+  const [isVerified, setIsVerified] = useState(false);
+
+  const handleRecaptcha = useCallback(async () => {
+    if (!executeRecaptcha) {
+      console.log("Recaptcha not yet available");
+      return;
+    }
+    try {
+      const token = await executeRecaptcha('ad_view');
+      if (token) {
+        setIsVerified(true);
+      }
+    } catch (error) {
+      console.error("reCAPTCHA execution failed:", error);
+    }
+  }, [executeRecaptcha]);
+
+  useEffect(() => {
+    handleRecaptcha();
+  }, [handleRecaptcha]);
+
+  return (
+    <RecaptchaContext.Provider value={{ isVerified }}>
+      {children}
+    </RecaptchaContext.Provider>
+  );
 }
 
 
@@ -46,7 +80,7 @@ export default function RootLayout({
         <title>Brain Training Hub</title>
         <meta name="description" content="A clean, modern brain exercise app." />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="google-adsense-account" content="ca-pub-6191158195654090" />
+        <meta name="google-adsense-account" content="ca-pub-619115654090" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
         <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -75,12 +109,14 @@ export default function RootLayout({
           <FirebaseClientProvider>
             <AuthHandler>
               <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey ?? ""}>
-                <div className="flex flex-col min-h-screen">
-                  <AppHeader />
-                  <main className="flex-grow">{children}</main>
-                  <Footer />
-                </div>
-                <Toaster />
+                <RecaptchaVerifier>
+                    <div className="flex flex-col min-h-screen">
+                      <AppHeader />
+                      <main className="flex-grow">{children}</main>
+                      <Footer />
+                    </div>
+                    <Toaster />
+                </RecaptchaVerifier>
               </GoogleReCaptchaProvider>
             </AuthHandler>
           </FirebaseClientProvider>
