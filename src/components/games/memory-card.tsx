@@ -12,7 +12,7 @@ type MemoryCardProps = {
 export function MemoryCard({ icon: Icon, isFlipped, onClick }: MemoryCardProps) {
   return (
     <div
-      className="w-20 h-20 sm:w-24 sm:h-24 [perspective:1000px] cursor-pointer group"
+      className="w-16 h-16 sm:w-20 sm:h-20 [perspective:1000px] cursor-pointer group"
       onClick={onClick}
     >
       <div
@@ -25,7 +25,7 @@ export function MemoryCard({ icon: Icon, isFlipped, onClick }: MemoryCardProps) 
           {/* Card Back */}
         </div>
         <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex items-center justify-center bg-card rounded-lg shadow-md">
-          <Icon className="w-12 h-12 text-primary" />
+          <Icon className="w-10 h-10 text-primary" />
         </div>
       </div>
     </div>

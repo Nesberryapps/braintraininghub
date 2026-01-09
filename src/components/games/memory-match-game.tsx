@@ -321,7 +321,7 @@ export function MemoryMatchGame() {
                 </Badge>
            </div>
         </div>
-        <div className={`grid grid-cols-4 gap-2 sm:gap-4 p-4 bg-primary/10 rounded-lg`}>
+        <div className={`grid grid-cols-4 gap-4 p-4 bg-primary/10 rounded-lg`}>
           {cards.map((card, index) => (
             <MemoryCard
               key={card.id}
