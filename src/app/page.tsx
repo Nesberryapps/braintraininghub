@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { BrainCircuit, Puzzle, FileText, Rabbit, TrendingUp, Sparkles, Brain, HelpCircle, CaseUpper } from "lucide-react";
+import { BrainCircuit, Puzzle, FileText, Rabbit, HelpCircle, CaseUpper } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -16,8 +16,6 @@ import { useProgress, type ProgressGame } from "@/hooks/use-progress";
 import { Badge } from "@/components/ui/badge";
 import AdBanner from "@/components/ads/ad-banner";
 import { DailyTipCard } from "@/components/daily-tip-card";
-import { Hero } from "@/components/hero";
-import { FeatureCard } from "@/components/feature-card";
 import { CognitiveCoachCard } from "@/components/cognitive-coach-card";
 
 const gameIcons: Record<ProgressGame, React.ReactNode> = {
@@ -90,38 +88,15 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
       <div className="w-full max-w-5xl">
-        <Hero />
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-16 text-center">
-            <FeatureCard 
-                icon={<Brain className="w-12 h-12 text-primary" />}
-                title="Diverse Brain Games"
-                description="Engage with a variety of games designed to challenge different cognitive skills, from memory and logic to reading speed and comprehension."
-            />
-            <FeatureCard 
-                icon={<TrendingUp className="w-12 h-12 text-primary" />}
-                title="Track Your Progress"
-                description="Monitor your performance over time. Your scores are saved on your device so you can see your cognitive abilities grow with each session."
-            />
-            <FeatureCard 
-                icon={<Sparkles className="w-12 h-12 text-primary" />}
-                title="AI-Powered Insights"
-                description="Get personalized feedback with our AI Coach. See insights into your cognitive patterns and get suggestions for targeted training."
-            />
-        </div>
-
-        <DailyTipCard />
-
-        <div id="games" className="my-16 text-center">
-             <h2 className="text-4xl font-bold font-headline text-primary mb-4">Our Games</h2>
+        <div className="my-8 text-center">
+             <h1 className="text-4xl font-bold font-headline text-primary mb-4">Choose a Game</h1>
              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                 Each game is a fun workout for your mind, designed to be both engaging and beneficial.
              </p>
         </div>
-
-        <CognitiveCoachCard />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {games.map((game) => (
             <Link
               href={game.href}
@@ -151,6 +126,10 @@ export default function Home() {
             </Link>
           ))}
         </div>
+        
+        <DailyTipCard />
+        <CognitiveCoachCard />
+
         <AdBanner dataAdSlot="9200324245" className="mt-8" />
       </div>
     </div>
