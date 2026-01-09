@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { useRecaptcha } from '@/app/layout';
 
 declare global {
   interface Window {
@@ -24,12 +23,8 @@ const AdBanner = ({
   className = '',
 }: AdBannerProps) => {
   const adRef = useRef<HTMLDivElement>(null);
-  const { isVerified } = useRecaptcha();
 
   useEffect(() => {
-    // Only proceed if reCAPTCHA is verified
-    if (!isVerified) return;
-
     const loadAd = () => {
       try {
         if (window.adsbygoogle) {
@@ -44,12 +39,7 @@ const AdBanner = ({
     const timeout = setTimeout(loadAd, 50);
 
     return () => clearTimeout(timeout);
-  }, [dataAdSlot, isVerified]);
-
-  // If not verified, render a placeholder to prevent layout shifts
-  if (!isVerified) {
-    return <div className={className} style={{ minHeight: '50px', display: 'block' }}></div>;
-  }
+  }, [dataAdSlot]);
 
   return (
     <div ref={adRef} className={className} style={{ minHeight: '50px', display: 'block' }}>

@@ -9,18 +9,14 @@ import { Footer } from "@/components/layout/footer";
 import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
-import { useEffect, useState, useCallback, createContext, useContext, type ReactNode } from "react";
+import { useEffect } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
-import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-sans",
 });
-
-const RecaptchaContext = createContext({ isVerified: false });
-export const useRecaptcha = () => useContext(RecaptchaContext);
 
 function AuthHandler({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
@@ -35,53 +31,11 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function AppProviders({ children, recaptchaKey }: { children: ReactNode, recaptchaKey: string }) {
-  const { executeRecaptcha } = useGoogleReCaptcha();
-  const [isVerified, setIsVerified] = useState(false);
-
-  const handleRecaptcha = useCallback(async () => {
-    if (!executeRecaptcha) {
-      console.log("Recaptcha not yet available");
-      return;
-    }
-    try {
-      const token = await executeRecaptcha('ad_view');
-      if (token) {
-        setIsVerified(true);
-      }
-    } catch (error) {
-      console.error("reCAPTCHA execution failed:", error);
-    }
-  }, [executeRecaptcha]);
-
-  useEffect(() => {
-    handleRecaptcha();
-  }, [handleRecaptcha]);
-
-  return (
-    <RecaptchaContext.Provider value={{ isVerified }}>
-      <FirebaseClientProvider>
-        <AuthHandler>
-          <div className="flex flex-col min-h-screen">
-            <AppHeader />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
-        </AuthHandler>
-      </FirebaseClientProvider>
-    </RecaptchaContext.Provider>
-  );
-}
-
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const recaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-  
   return (
     <html lang="en">
       <head>
@@ -114,19 +68,16 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={cn("font-body antialiased", ptSans.variable)}>
-          {recaptchaKey ? (
-            <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey}>
-              <AppProviders recaptchaKey={recaptchaKey}>
-                {children}
-              </AppProviders>
-            </GoogleReCaptchaProvider>
-          ) : (
-            <div className="flex flex-col min-h-screen">
-              <AppHeader />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-          )}
+          <FirebaseClientProvider>
+            <AuthHandler>
+              <div className="flex flex-col min-h-screen">
+                <AppHeader />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </AuthHandler>
+          </FirebaseClientProvider>
       </body>
     </html>
   );

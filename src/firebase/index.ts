@@ -8,42 +8,26 @@ import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  if (!getApps().length) {
-    // Important! initializeApp() is called without any arguments because Firebase App Hosting
-    // integrates with the initializeApp() function to provide the environment variables needed to
-    // populate the FirebaseOptions in production. It is critical that we attempt to call initializeApp()
-    // without arguments.
-    let firebaseApp;
-    try {
-      // Attempt to initialize via Firebase App Hosting environment variables
-      firebaseApp = initializeApp();
-    } catch (e) {
-      // Only warn in production because it's normal to use the firebaseConfig to initialize
-      // during development
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
-      firebaseApp = initializeApp(firebaseConfig);
-    }
-    
-    // Initialize App Check
-    if (typeof window !== 'undefined') {
-        const reCaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-        if (reCaptchaKey) {
-            initializeAppCheck(firebaseApp, {
-                provider: new ReCaptchaV3Provider(reCaptchaKey),
-                isTokenAutoRefreshEnabled: true
-            });
-        } else {
-            console.warn("reCAPTCHA Site Key is not found. App Check will not be enabled.");
-        }
-    }
+  const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-    return getSdks(firebaseApp);
+  if (typeof window !== 'undefined') {
+    // Initialize App Check on the client
+    const reCaptchaKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+    if (reCaptchaKey) {
+        try {
+            initializeAppCheck(app, {
+                provider: new ReCaptchaV3Provider(reCaptchaKey),
+                isTokenAutoRefreshEnabled: true,
+            });
+        } catch (e) {
+            console.error("App Check initialization failed.", e);
+        }
+    } else {
+        console.warn("reCAPTCHA Site Key not found. App Check will not be enabled.");
+    }
   }
 
-  // If already initialized, return the SDKs with the already initialized App
-  return getSdks(getApp());
+  return getSdks(app);
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
