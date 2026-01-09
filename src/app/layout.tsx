@@ -108,16 +108,24 @@ export default function RootLayout({
       <body className={cn("font-body antialiased", ptSans.variable)}>
           <FirebaseClientProvider>
             <AuthHandler>
-              <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey ?? ""}>
-                <RecaptchaVerifier>
-                    <div className="flex flex-col min-h-screen">
-                      <AppHeader />
-                      <main className="flex-grow">{children}</main>
-                      <Footer />
-                    </div>
-                    <Toaster />
-                </RecaptchaVerifier>
-              </GoogleReCaptchaProvider>
+              {recaptchaKey ? (
+                  <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey}>
+                    <RecaptchaVerifier>
+                        <div className="flex flex-col min-h-screen">
+                          <AppHeader />
+                          <main className="flex-grow">{children}</main>
+                          <Footer />
+                        </div>
+                        <Toaster />
+                    </RecaptchaVerifier>
+                  </GoogleReCaptchaProvider>
+              ) : (
+                <div className="flex flex-col min-h-screen">
+                  <AppHeader />
+                  <main className="flex-grow">{children}</main>
+                  <Footer />
+                </div>
+              )}
             </AuthHandler>
           </FirebaseClientProvider>
       </body>
