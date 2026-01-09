@@ -3,10 +3,12 @@
 	"appName": "Brain Training Hub",
 	"webDir": "out",
 	"server": {
-		"androidScheme": "https"
+		"androidScheme": "https",
+		"hostname": "app"
 	},
 	"android": {},
 	"packageClassList": [
-		"AdMobPlugin"
+		"AdMobPlugin",
+		"PushNotificationsPlugin"
 	]
 }

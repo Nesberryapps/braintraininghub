@@ -11,6 +11,7 @@ import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
 import { useEffect } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
+import { initializePushNotifications } from "@/services/notifications"; // Import the new service
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -29,6 +30,15 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
   }, [isUserLoading, user, auth]);
 
   return <>{children}</>;
+}
+
+// New Initializer component
+function Initializer() {
+  useEffect(() => {
+    initializePushNotifications();
+  }, []);
+
+  return null; // This component doesn't render anything
 }
 
 export default function RootLayout({
@@ -70,6 +80,7 @@ export default function RootLayout({
       <body className={cn("font-body antialiased", ptSans.variable)}>
           <FirebaseClientProvider>
             <AuthHandler>
+              <Initializer /> {/* Add the initializer */}
               <div className="flex flex-col min-h-screen">
                 <AppHeader />
                 <main className="flex-grow">{children}</main>
