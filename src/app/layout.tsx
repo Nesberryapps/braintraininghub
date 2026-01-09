@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
-import { useEffect, useState, useCallback, createContext, useContext } from "react";
+import { useEffect, useState, useCallback, createContext, useContext, type ReactNode } from "react";
 import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
@@ -19,7 +19,6 @@ const ptSans = PT_Sans({
   variable: "--font-sans",
 });
 
-// Create a context to hold the verification status
 const RecaptchaContext = createContext({ isVerified: false });
 export const useRecaptcha = () => useContext(RecaptchaContext);
 
@@ -36,7 +35,7 @@ function AuthHandler({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function RecaptchaVerifier({ children }: { children: React.ReactNode }) {
+function AppProviders({ children, recaptchaKey }: { children: ReactNode, recaptchaKey: string }) {
   const { executeRecaptcha } = useGoogleReCaptcha();
   const [isVerified, setIsVerified] = useState(false);
 
@@ -61,7 +60,16 @@ function RecaptchaVerifier({ children }: { children: React.ReactNode }) {
 
   return (
     <RecaptchaContext.Provider value={{ isVerified }}>
-      {children}
+      <FirebaseClientProvider>
+        <AuthHandler>
+          <div className="flex flex-col min-h-screen">
+            <AppHeader />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </div>
+          <Toaster />
+        </AuthHandler>
+      </FirebaseClientProvider>
     </RecaptchaContext.Provider>
   );
 }
@@ -106,28 +114,19 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={cn("font-body antialiased", ptSans.variable)}>
-          <FirebaseClientProvider>
-            <AuthHandler>
-              {recaptchaKey ? (
-                  <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey}>
-                    <RecaptchaVerifier>
-                        <div className="flex flex-col min-h-screen">
-                          <AppHeader />
-                          <main className="flex-grow">{children}</main>
-                          <Footer />
-                        </div>
-                        <Toaster />
-                    </RecaptchaVerifier>
-                  </GoogleReCaptchaProvider>
-              ) : (
-                <div className="flex flex-col min-h-screen">
-                  <AppHeader />
-                  <main className="flex-grow">{children}</main>
-                  <Footer />
-                </div>
-              )}
-            </AuthHandler>
-          </FirebaseClientProvider>
+          {recaptchaKey ? (
+            <GoogleReCaptchaProvider reCaptchaKey={recaptchaKey}>
+              <AppProviders recaptchaKey={recaptchaKey}>
+                {children}
+              </AppProviders>
+            </GoogleReCaptchaProvider>
+          ) : (
+            <div className="flex flex-col min-h-screen">
+              <AppHeader />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </div>
+          )}
       </body>
     </html>
   );
