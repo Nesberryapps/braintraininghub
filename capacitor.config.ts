@@ -5,7 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Brain Training Hub',
   webDir: 'out',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    hostname: 'app',
   },
   android: {
     buildOptions: {
