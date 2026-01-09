@@ -12,7 +12,7 @@ export async function initializeAdMob() {
   if (Capacitor.isNativePlatform() && !isInitialized) {
     try {
         await AdMob.initialize({
-            initializeForTesting: true,
+            initializeForTesting: false,
         });
         isInitialized = true;
     } catch (e) {
@@ -49,7 +49,6 @@ export async function showRewardAd(onRewardEarned: () => void) {
     return;
   }
 
-  // Google Test Unit IDs (Swap these for Real IDs before launch!)
   const adId = Capacitor.getPlatform() === 'ios'
     ? 'ca-app-pub-6191158195654090/2927179100'
     : 'ca-app-pub-6191158195654090/8956017949';
@@ -78,10 +77,9 @@ export async function showInterstitialAd() {
   await initializeAdMob();
   if (!Capacitor.isNativePlatform()) return;
 
-  // Google Test IDs (Replace with Real IDs before launch)
   const adId = Capacitor.getPlatform() === 'ios'
-    ? 'ca-app-pub-6191158195654090/5539439502' // iOS Test Interstitial
-    : 'ca-app-pub-6191158195654090/8432377915'; // Android Test Interstitial
+    ? 'ca-app-pub-6191158195654090/5539439502'
+    : 'ca-app-pub-6191158195654090/8432377915';
 
   try {
     // 1. Prepare
