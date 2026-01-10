@@ -15,13 +15,13 @@ const saveTokenToFirestore = async (auth: Auth, db: Firestore, token: string) =>
   }
 
   try {
-    const tokenRef = doc(db, 'fcmTokens', user.uid);
+    const tokenRef = doc(db, 'users', user.uid, 'deviceTokens', token);
     await setDoc(tokenRef, { 
       token: token,
       createdAt: serverTimestamp(),
       platform: Capacitor.getPlatform(),
     }, { merge: true });
-    console.log('FCM token saved to Firestore');
+    console.log('FCM token saved to Firestore in user subcollection');
   } catch (error) {
     console.error('Error saving FCM token to Firestore:', error);
   }
