@@ -7,17 +7,17 @@ import { getAuth } from "firebase/auth";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAw8VNEGc0xeTiRNxBTbTR6OQEraEjSLbQ",
-  authDomain: "mind-bloom-v3y6p.firebaseapp.com",
-  projectId: "mind-bloom-v3y6p",
-  storageBucket: "mind-bloom-v3y6p.firebasestorage.app",
-  messagingSenderId: "1080250387073",
-  appId: "1:1080250387073:web:5c8f448091545408fedb80",
-  measurementId: "G-5V93ET4Z5H"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export { app, auth };
+export { app, auth, firebaseConfig };
