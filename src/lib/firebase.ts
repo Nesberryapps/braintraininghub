@@ -7,7 +7,7 @@ import { getAuth } from "firebase/auth";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDRYYcd8jNO1PLscSSMlnkp-QiO-A9OGO0",
+  apiKey: "AIzaSyAw8VNEGc0xeTiRNxBTbTR6OQEraEjSLbQ",
   authDomain: "mind-bloom-v3y6p.firebaseapp.com",
   projectId: "mind-bloom-v3y6p",
   storageBucket: "mind-bloom-v3y6p.firebasestorage.app",
