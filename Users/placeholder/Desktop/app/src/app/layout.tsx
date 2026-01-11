@@ -9,8 +9,8 @@ import { Footer } from "@/components/layout/footer";
 import { AppHeader } from "@/components/layout/header";
 import { GoogleScripts } from "@/components/ads/google-scripts";
 import Script from "next/script";
-import { useEffect } from "react";
-import { FirebaseClientProvider, useAuth, useUser, initiateAnonymousSignIn } from "@/firebase";
+import { AppProviders } from "@/components/app-providers";
+
 
 const ptSans = PT_Sans({
   subsets: ["latin"],
@@ -18,34 +18,19 @@ const ptSans = PT_Sans({
   variable: "--font-sans",
 });
 
-function AuthHandler({ children }: { children: React.ReactNode }) {
-  const auth = useAuth();
-  const { user, isUserLoading } = useUser();
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      initiateAnonymousSignIn(auth);
-    }
-  }, [isUserLoading, user, auth]);
-
-  return <>{children}</>;
-}
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-
-  const adsensePubId = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID;
-
   return (
     <html lang="en">
       <head>
         <title>Brain Training Hub</title>
         <meta name="description" content="A clean, modern brain exercise app." />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {adsensePubId && <meta name="google-adsense-account" content={adsensePubId} />}
+        {process.env.NEXT_PUBLIC_ADSENSE_PUB_ID && <meta name="google-adsense-account" content={process.env.NEXT_PUBLIC_ADSENSE_PUB_ID} />}
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
         <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -71,16 +56,14 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={cn("font-body antialiased", ptSans.variable)}>
-          <FirebaseClientProvider>
-            <AuthHandler>
-              <div className="flex flex-col min-h-screen">
-                <AppHeader />
-                <main className="flex-grow">{children}</main>
-                <Footer />
-              </div>
-              <Toaster />
-            </AuthHandler>
-          </FirebaseClientProvider>
+          <AppProviders>
+            <div className="flex flex-col min-h-screen">
+              <AppHeader />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
+          </AppProviders>
       </body>
     </html>
   );
